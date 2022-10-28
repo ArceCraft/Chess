@@ -1,61 +1,52 @@
-import java.util.ArrayList;
-import java.util.List;
+public abstract  class Piece {
 
-public class Piece {
-
-    private PieceColor pieceColor;
-    private Square placeAt;
+    protected PieceColor pieceColor;
+    protected Square placeAt;
     private Boolean moved = false;
 
     private PieceType pieceType;
     private String pieceSymbol;
 
+    Board board;
 
 
-    Piece(Board board){
+
+    Piece(Board board, PieceColor pieceColor){
+
+        this.pieceColor = pieceColor;
+        this.board = board;
+
 
     }
 
-    public Square[] ValidMoves(){
+    public abstract Square[] Moves();
 
-        List<Square> validMovesList= new ArrayList<Square>();
 
-        Square[] validMoves = new Square[validMovesList.size()];
+    public Boolean FreeMoveValidation(Square square){
 
-        return validMoves;
+        boolean exist = false;
+
+        if(board.getSquareFromSquares(square.getRow(),square.getColumn()).getPiece() != null && board.getSquareFromSquares(square.getRow(),square.getColumn()).getPiece().getPieceColor() == pieceColor )
+            exist=true;
+
+        return exist;
+
     }
 
-    public void moveTo(Square squareDestination){
+    public Boolean CaptureMoveValidation(Square square){
 
-        placeAt = squareDestination;
+        boolean exist = false;
 
-    }
+        if(board.getSquareFromSquares(square.getRow(),square.getColumn()).getPiece() != null && board.getSquareFromSquares(square.getRow(),square.getColumn()).getPiece().getPieceColor() != pieceColor )
+            exist=true;
 
-    public Square[] AttackSquares(){
-        Square[] attackSquares = new Square[0];
+        return exist;
 
-        return  attackSquares;
-    }
-
-    public Square[] CaptureFreeMoves(){
-        Square[] captureFreeMoves = new Square[0];
-
-        return captureFreeMoves;
-    }
-
-    public Boolean ToBeCaptured(){
-        Boolean toBeCaptured = false;
-        return toBeCaptured;
     }
 
 
     ///////////////////SETS///////////////////////
 
-    void setPlaceAt(Square square){
-
-        placeAt =  square;
-
-    }
     void setPieceColor(PieceColor color){
         pieceColor = color;
     }
@@ -72,6 +63,7 @@ public class Piece {
     void setPieceSymbol(String pieceSymbol){
         this.pieceSymbol = pieceSymbol;
     }
+
 
     //////////////////GETS/////////////////////
 
@@ -98,4 +90,11 @@ public class Piece {
     }
 
 
+    public void setPlaceAt(Square square) {
+        placeAt = square;
+    }
+
+    public void moveTo(Square square){
+        placeAt = square;
+    }
 }

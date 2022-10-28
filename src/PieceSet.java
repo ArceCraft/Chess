@@ -44,19 +44,17 @@ public class PieceSet {
     void AddPawns(){
 
         Piece[] pieceType = new Piece[8];
-        String pieceSymbol = piecesSymbols[PieceType.Pawn.ordinal()];
+        String pieceSymbol = piecesSymbols[PieceType.Peon.ordinal()];
 
         for (int i = 0; i < pieceType.length; i++) {
-            pieceType[i] = new Pawn(board);
-            pieceType[i].setPieceColor(color);
-            pieceType[i].setPieceType(PieceType.Pawn);
+            pieceType[i] = new Pawn(board, color);
 
             if(pieceOnTop == color)
                 pieceType[i].setPlaceAt(new Square(1,i));
             else
                 pieceType[i].setPlaceAt(new Square(6,i));
             if(color == PieceColor.Black)
-                pieceSymbol = piecesSymbols[PieceType.Pawn.ordinal()+6];
+                pieceSymbol = piecesSymbols[PieceType.Peon.ordinal()+6];
 
             pieceType[i].setPieceSymbol(pieceSymbol);
 
@@ -67,14 +65,14 @@ public class PieceSet {
     void AddRooks(){
 
         int row = 0;
-        String pieceSymbol = piecesSymbols[PieceType.Rook.ordinal()];
+        String pieceSymbol = piecesSymbols[PieceType.Torre.ordinal()];
 
 
         Piece[] pieceType = new Piece[2];
 
 
-        pieceType[0] = new Rook();
-        pieceType[1] = new Rook();
+        pieceType[0] = new Rook(board, color);
+        pieceType[1] = new Rook(board, color);
 
         pieceType[0].setPieceColor(color);
         pieceType[1].setPieceColor(color);
@@ -83,7 +81,7 @@ public class PieceSet {
             row = 7;
 
         if(color == PieceColor.Black)
-            pieceSymbol = piecesSymbols[PieceType.Rook.ordinal()+6];
+            pieceSymbol = piecesSymbols[PieceType.Torre.ordinal()+6];
 
 
 
@@ -91,8 +89,8 @@ public class PieceSet {
         pieceType[0].setPlaceAt(new Square(row,0));
         pieceType[1].setPlaceAt(new Square(row,7));
 
-        pieceType[0].setPieceType(PieceType.Rook);
-        pieceType[1].setPieceType(PieceType.Rook);
+        pieceType[0].setPieceType(PieceType.Torre);
+        pieceType[1].setPieceType(PieceType.Torre);
 
         pieceType[0].setPieceSymbol(pieceSymbol);
         pieceType[1].setPieceSymbol(pieceSymbol);
@@ -106,27 +104,22 @@ public class PieceSet {
     void AddKnights(){
 
         int row = 0;
-        String pieceSymbol = piecesSymbols[PieceType.Knight.ordinal()];
+        String pieceSymbol = piecesSymbols[PieceType.Caballo.ordinal()];
 
         Piece[] pieceType = new Piece[2];
 
 
-        pieceType[0] = new Knight();
-        pieceType[1] = new Knight();
+        pieceType[0] = new Knight(board, color);
+        pieceType[1] = new Knight(board, color);
 
-        pieceType[0].setPieceColor(color);
-        pieceType[1].setPieceColor(color);
 
         if(pieceOnTop != color)
             row = 7;
         if(color == PieceColor.Black)
-            pieceSymbol = piecesSymbols[PieceType.Knight.ordinal()+6];
+            pieceSymbol = piecesSymbols[PieceType.Caballo.ordinal()+6];
 
         pieceType[0].setPlaceAt(new Square(row,1));
         pieceType[1].setPlaceAt(new Square(row,6));
-
-        pieceType[0].setPieceType(PieceType.Knight);
-        pieceType[1].setPieceType(PieceType.Knight);
 
         pieceType[0].setPieceSymbol(pieceSymbol);
         pieceType[1].setPieceSymbol(pieceSymbol);
@@ -140,27 +133,21 @@ public class PieceSet {
     void AddBishops(){
 
         int row = 0;
-        String pieceSymbol = piecesSymbols[PieceType.Bishop.ordinal()];
+        String pieceSymbol = piecesSymbols[PieceType.Alfil.ordinal()];
 
         Piece[] pieceType = new Piece[2];
 
+        pieceType[0] = new Bishop(board, color);
+        pieceType[1] = new Bishop(board, color);
 
-        pieceType[0] = new Bishop();
-        pieceType[1] = new Bishop();
-
-        pieceType[0].setPieceColor(color);
-        pieceType[1].setPieceColor(color);
 
         if(pieceOnTop != color)
             row = 7;
         if(color == PieceColor.Black)
-            pieceSymbol = piecesSymbols[PieceType.Bishop.ordinal()+6];
+            pieceSymbol = piecesSymbols[PieceType.Alfil.ordinal()+6];
 
         pieceType[0].setPlaceAt(new Square(row,2));
         pieceType[1].setPlaceAt(new Square(row,5));
-
-        pieceType[0].setPieceType(PieceType.Bishop);
-        pieceType[1].setPieceType(PieceType.Bishop);
 
         pieceType[0].setPieceSymbol(pieceSymbol);
         pieceType[1].setPieceSymbol(pieceSymbol);
@@ -174,18 +161,17 @@ public class PieceSet {
     void AddQueen() {
 
         int row = 0;
-        String pieceSymbol = piecesSymbols[PieceType.Queen.ordinal()];
+        String pieceSymbol = piecesSymbols[PieceType.Reina.ordinal()];
 
-        Piece queen = new Queen();
-        queen.setPieceColor(color);
+        Piece queen = new Queen(board, color);
 
         if (pieceOnTop != color)
             row = 7;
         if (color == PieceColor.Black)
-            pieceSymbol = piecesSymbols[PieceType.Queen.ordinal() + 6];
+            pieceSymbol = piecesSymbols[PieceType.Reina.ordinal() + 6];
 
         queen.setPlaceAt(new Square(row, 4));
-        queen.setPieceType(PieceType.Queen);
+
         queen.setPieceSymbol(pieceSymbol);
 
         pieces.add(queen);
@@ -195,18 +181,18 @@ public class PieceSet {
     void AddKing(){
 
         int row = 0;
-        String pieceSymbol = piecesSymbols[PieceType.King.ordinal()];
+        String pieceSymbol = piecesSymbols[PieceType.Rey.ordinal()];
 
-        Piece king = new King();
-        king.setPieceColor(color);
+        Piece king = new King(board, color);
+
 
         if(pieceOnTop != color)
             row = 7;
         if (color == PieceColor.Black)
-            pieceSymbol = piecesSymbols[PieceType.King.ordinal() +6];
+            pieceSymbol = piecesSymbols[PieceType.Rey.ordinal() +6];
 
         king.setPlaceAt(new Square(row,3));
-        king.setPieceType(PieceType.King);
+
         king.setPieceSymbol(pieceSymbol);
 
         pieces.add(king);

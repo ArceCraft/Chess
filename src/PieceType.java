@@ -1,9 +1,8 @@
 public enum PieceType {
-    King,
-    Queen,
-    Rook,
-    Bishop,
-    Knight,
-    Pawn,
-    Emty
+    Rey,
+    Reina,
+    Torre,
+    Alfil,
+    Caballo,
+    Peon,
 }

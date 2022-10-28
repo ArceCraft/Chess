@@ -44,6 +44,8 @@ public class ConsoleColors {
     public static final String CYAN_BACKGROUND = "\u001B[46m";
     public static final String WHITE_BACKGROUND = "\u001B[47m";
     public static final String BROWN_BACKGROUND = "\u001b[48;5;166m";
+    public static final String WHITE_BACKGROUND_SELECT = "\u001b[48;5;47m";
+    public static final String BLACK_BACKGROUND_SELECT ="\u001b[48;5;22m";
 
     // High Intensity
     public static final String BLACK_BRIGHT = "\u001b[30;1m";  // BLACK
