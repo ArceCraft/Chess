@@ -3,12 +3,6 @@ import java.util.Scanner;
 
 public class Game {
 
-    public static final String ANSI_BLACK = "\u001B[30m";
-    public static final String ANSI_RESET = "\u001B[0m";
-    public static final String ANSI_WHITE = "\u001B[45m";
-    public static final String ANSI_BLACK_BACKGROUND = "\u001B[40m";
-    public static final String ANSI_WHITE_BACKGROUND = "\u001B[45m";
-
     private List<Move> playedMoves;
     private Player[] players = new Player[2];
     private PieceColor turn;
@@ -22,13 +16,7 @@ public class Game {
         Create();
         PrintBoard();
 
-        System.out.println(board.pieceSets[0].pieces.get(8).getPieceType());
-        System.out.println(board.pieceSets[0].pieces.get(8).getPlaceAt().getRow()+  ", "+board.pieceSets[0].pieces.get(0).getPlaceAt().getColumn()  );
-        board.pieceSets[0].pieces.get(8).moveTo(makeMove());
-
-        board.UpdateSquares();
-
-        PrintBoard();
+        MoveRequest();
 
 
     }
@@ -67,16 +55,23 @@ public class Game {
 
         boolean cellPainting = true;
 
+        System.out.print(FrameGeneration());
+
+        for (int i = 0; i < 8; i++) {
+            System.out.print(FrameGeneration(String.valueOf(Rank.values()[i])));
+        }
+
         for (int i = 0; i < 8; i++) {
             System.out.println();
+            System.out.print(FrameGeneration(String.valueOf(8-i)));
             cellPainting = !cellPainting;
             for (int j = 0; j < 8; j++) {
                 cellPainting = !cellPainting;
                 if(board.getSquareFromSquares(i,j).getPiece() != null) {
                     if (cellPainting)
-                        System.out.print(ANSI_WHITE_BACKGROUND + board.getSquareFromSquares(i,j).getPiece().getPieceSymbol() + ANSI_RESET);
+                        System.out.print(ConsoleColors.WHITE_BACKGROUND_BRIGHT + board.getSquareFromSquares(i,j).getPiece().getPieceSymbol() + ConsoleColors.RESET);
                     else
-                        System.out.print(ANSI_BLACK_BACKGROUND + board.getSquareFromSquares(i,j).getPiece().getPieceSymbol() + ANSI_RESET);
+                        System.out.print(ConsoleColors.BLACK_BACKGROUND + board.getSquareFromSquares(i,j).getPiece().getPieceSymbol() + ConsoleColors.RESET);
                 }
 
                 else{
@@ -91,19 +86,67 @@ public class Game {
         System.out.println();
     }
 
-    Square makeMove(){
+    Square makeMove(int row, int column){
 
-        int row = sc.nextInt();
-        int column = sc.nextInt();
         Square squareTo = new Square(row,column);
 
      return squareTo;
     }
 
+    void MoveRequest(){
+
+
+        System.out.println("Piezas disponibles para mover: ");
+
+        for (int i = 0; i < board.pieceSets[0].pieces.size(); i++) {
+            if(board.pieceSets[0].pieces.get(i).getPieceType() == PieceType.Rook || board.pieceSets[0].pieces.get(i).getPieceType() == PieceType.Pawn || board.pieceSets[0].pieces.get(i).getPieceType() == PieceType.King)
+                System.out.print((i+1)+".- "+board.pieceSets[0].pieces.get(i).getPieceType() + "   |");
+            else if(board.pieceSets[0].pieces.get(i).getPieceType() == PieceType.Queen)
+                System.out.print((i+1)+".- "+board.pieceSets[0].pieces.get(i).getPieceType() + "  |");
+            else
+                System.out.print((i+1)+".- "+board.pieceSets[0].pieces.get(i).getPieceType() + " |");
+            System.out.println(" " + Rank.values()[board.pieceSets[0].pieces.get(i).getPlaceAt().getColumn()] + (8-board.pieceSets[0].pieces.get(i).getPlaceAt().getRow()));
+        }
+
+        System.out.println("De las anteriores piezas listadas, seleccione la que desea mover");
+        int pieceIndex = sc.nextInt()-1;
+
+        System.out.println();
+        System.out.println("Pieza Seleccionada: " + board.pieceSets[1].pieces.get(pieceIndex).getPieceType() + "|" +Rank.values()[board.pieceSets[0].pieces.get(pieceIndex).getPlaceAt().getColumn()] + (8-board.pieceSets[0].pieces.get(pieceIndex).getPlaceAt().getRow()));
+
+
+
+        System.out.println("¿A qué coordenada desea moverla?");
+
+
+        System.out.println();
+
+    }
+
+
+
+
+    ////////////////////Recursos para imprimir//////////////////
     String[] boardSymbol = {
-            ANSI_WHITE_BACKGROUND + ANSI_WHITE + " ♚" + ANSI_RESET,
-            ANSI_BLACK_BACKGROUND + ANSI_BLACK + " ♚" + ANSI_RESET
+            ConsoleColors.WHITE_BACKGROUND_BRIGHT + ConsoleColors.WHITE_BOLD_BRIGHT + " ♚ " + ConsoleColors.RESET,
+            ConsoleColors.BLACK_BACKGROUND + ConsoleColors.BLACK_BOLD + " ♚ " + ConsoleColors.RESET,
     };
+
+    String FrameGeneration(String value){
+
+        String string = ConsoleColors.BROWN_BACKGROUND + ConsoleColors.BLACK_BRIGHT + " " + value+ ConsoleColors.BROWN_BRIGHT+ "♚"  + ConsoleColors.RESET;
+
+        return string;
+
+    }
+
+    String FrameGeneration(){
+
+        String string = ConsoleColors.BROWN_BACKGROUND + ConsoleColors.BROWN_BRIGHT +" "+ "A" + "♚"  + ConsoleColors.RESET;
+
+        return string;
+
+    }
 
 
 }

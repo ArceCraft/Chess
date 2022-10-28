@@ -12,8 +12,8 @@ public class Board {
 
     public void Create(){
 
-        pieceSets[0] = new PieceSet(PieceColor.Black, pieceSetOnTop);
-        pieceSets[1] = new PieceSet(PieceColor.White, pieceSetOnTop);
+        pieceSets[0] = new PieceSet(this, PieceColor.Black, pieceSetOnTop);
+        pieceSets[1] = new PieceSet(this, PieceColor.White, pieceSetOnTop);
 
 
         UpdateSquares();

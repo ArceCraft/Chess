@@ -10,7 +10,9 @@ public class Piece {
     private PieceType pieceType;
     private String pieceSymbol;
 
-    Piece(){
+
+
+    Piece(Board board){
 
     }
 

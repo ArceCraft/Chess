@@ -5,17 +5,15 @@ import java.util.List;
 
 public class PieceSet {
 
-    public static final String ANSI_RESET = "\u001B[0m";
-    public static final String ANSI_RED = "\u001B[32m";
-    public static final String ANSI_BLUE = "\u001B[34m";
-
     List<Piece> pieces;
     private  PieceColor color;
 
     private PieceColor pieceOnTop;
 
-    PieceSet(PieceColor color, PieceColor pieceOnTop){
+    private Board board;
 
+    PieceSet(Board board,PieceColor color, PieceColor pieceOnTop){
+        this.board = board;
         this.color = color;
         this.pieceOnTop = pieceOnTop;
 
@@ -30,13 +28,26 @@ public class PieceSet {
 
     }
 
+
+    int getPiecesBySquareCoordinates(Square square){
+        int pieceIndex = 0;
+        for(Piece piece : pieces){
+            if(square.getRow() == piece.getPlaceAt().getRow() && square.getColumn() == piece.getPlaceAt().getColumn())
+                break;
+            pieceIndex++;
+        }
+
+        return pieceIndex;
+
+    }
+
     void AddPawns(){
 
         Piece[] pieceType = new Piece[8];
         String pieceSymbol = piecesSymbols[PieceType.Pawn.ordinal()];
 
         for (int i = 0; i < pieceType.length; i++) {
-            pieceType[i] = new Pawn();
+            pieceType[i] = new Pawn(board);
             pieceType[i].setPieceColor(color);
             pieceType[i].setPieceType(PieceType.Pawn);
 
@@ -203,18 +214,19 @@ public class PieceSet {
     }
 
     String[] piecesSymbols ={
-            ANSI_BLUE +" ♚"+ ANSI_RESET, // White King      0
-            ANSI_BLUE +" ♛"+ ANSI_RESET, // White Queen     1
-            ANSI_BLUE +" ♜"+ ANSI_RESET, // White Rook      2
-            ANSI_BLUE +" ♝"+ ANSI_RESET, // White Bishop    3
-            ANSI_BLUE +" ♞"+ ANSI_RESET, // White Knight    4
-            ANSI_BLUE +" ♙"+ ANSI_RESET, // White Pawn      5
-            ANSI_RED  +" ♚"+ ANSI_RESET,  // Black King      6
-            ANSI_RED  +" ♛"+ ANSI_RESET, // Black Queen     7
-            ANSI_RED  +" ♜"+ ANSI_RESET, // Black Rook      8
-            ANSI_RED  +" ♝"+ ANSI_RESET, // Black Bishop    9
-            ANSI_RED  +" ♞"+ ANSI_RESET, // Black Knight    10
-            ANSI_RED  +" ♙"+ ANSI_RESET, // Black Pawn      11
+
+            ConsoleColors.BLUE_BRIGHT +" ♚ "+ ConsoleColors.RESET, // White King      0
+            ConsoleColors.BLUE_BRIGHT +" ♛ "+ ConsoleColors.RESET, // White Queen     1
+            ConsoleColors.BLUE_BRIGHT +" ♜ "+ ConsoleColors.RESET, // White Rook      2
+            ConsoleColors.BLUE_BRIGHT +" ♝ "+ ConsoleColors.RESET, // White Bishop    3
+            ConsoleColors.BLUE_BRIGHT +" ♞ "+ ConsoleColors.RESET, // White Knight    4
+            ConsoleColors.BLUE_BRIGHT +" ♙ "+ ConsoleColors.RESET, // White Pawn      5
+            ConsoleColors.RED_BRIGHT  +" ♚ "+ ConsoleColors.RESET,  // Black King      6
+            ConsoleColors.RED_BRIGHT  +" ♛ "+ ConsoleColors.RESET, // Black Queen     7
+            ConsoleColors.RED_BRIGHT  +" ♜ "+ ConsoleColors.RESET, // Black Rook      8
+            ConsoleColors.RED_BRIGHT  +" ♝ "+ ConsoleColors.RESET, // Black Bishop    9
+            ConsoleColors.RED_BRIGHT  +" ♞ "+ ConsoleColors.RESET, // Black Knight    10
+            ConsoleColors.RED_BRIGHT  +" ♙ "+ ConsoleColors.RESET, // Black Pawn      11
 
     };
 
