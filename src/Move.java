@@ -6,7 +6,17 @@ public class Move {
     private Piece capturedPiece;
 
     public Move(Square startSquare, Square endSquare, Piece piece, Piece capturedPiece){
+        this.startSquare = startSquare;
+        this.endSquare = endSquare;
+        this.piece = piece;
+        this.capturedPiece = capturedPiece;
+    }
 
+    public Move(Square startSquare, Square endSquare, Piece piece){
+        this.startSquare = startSquare;
+        this.endSquare = endSquare;
+        this.piece = piece;
+        this.capturedPiece = null;
     }
 
 

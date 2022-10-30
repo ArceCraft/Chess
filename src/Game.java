@@ -1,9 +1,10 @@
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 public class Game {
 
-    private List<Move> playedMoves;
+    private List<Move> playedMoves = new ArrayList<>();
     private Player[] players = new Player[2];
     private PieceColor turn;
     private Result result;
@@ -29,7 +30,17 @@ public class Game {
 
     public void AddMove(Square startSquare, Square toSquare, Piece piece, Piece pieceCaptured) {
 
-        playedMoves.add(new Move(startSquare,toSquare,piece,pieceCaptured));
+        try {
+            playedMoves.add(new Move(startSquare,toSquare,piece,pieceCaptured));
+            removePiece(pieceCaptured);
+        }
+        catch (Exception e){
+            playedMoves.add(new Move(startSquare,toSquare,piece));
+        }
+
+        makeMove(piece,toSquare);
+
+
     }
 
     public void Create() {
@@ -113,14 +124,24 @@ public class Game {
             cellPainting = !cellPainting;
             for (int j = 0; j < 8; j++) {
                 cellPainting = !cellPainting;
-                if(board.getSquareFromSquares(i,j).getPiece() != null) {
+                if(board.getSquareFromSquares(i,j).getPiece() != null && isSelectable(moves,i,j)){
+
+                    if (cellPainting)
+                        System.out.print(ConsoleColors.WHITE_BACKGROUND_SELECT_ATTACK+ board.getSquareFromSquares(i,j).getPiece().getPieceSymbol() + ConsoleColors.RESET);
+                    else
+                        System.out.print(ConsoleColors.BLACK_BACKGROUND_SELECT_ATTACK + board.getSquareFromSquares(i,j).getPiece().getPieceSymbol() + ConsoleColors.RESET);
+                    continue;
+                }
+
+                else if(board.getSquareFromSquares(i,j).getPiece() != null && !isSelectable(moves,i,j)) {
+
                     if (cellPainting)
                         System.out.print(ConsoleColors.WHITE_BACKGROUND_BRIGHT + board.getSquareFromSquares(i,j).getPiece().getPieceSymbol() + ConsoleColors.RESET);
                     else
                         System.out.print(ConsoleColors.BLACK_BACKGROUND + board.getSquareFromSquares(i,j).getPiece().getPieceSymbol() + ConsoleColors.RESET);
                 }
 
-                else if(isSelectable(moves,i,j)){
+                else if(isSelectable(moves,i,j) && board.getSquareFromSquares(i,j).getPiece() == null ){
                             if (cellPainting)
                                 System.out.print(boardSymbol[2]);
                             else
@@ -139,9 +160,55 @@ public class Game {
         System.out.println();
     }
 
+    boolean isSelectable(Square square[],int i, int j){
+        boolean isSelectable = false;
+
+        for (int k = 0; k < square.length; k++) {
+            if(square[k].getColumn() == j && square[k].getRow() == i)
+                isSelectable = true;
+
+        }
+
+        return  isSelectable;
+    }
+
     void makeMove(Piece piece,Square square){
 
         piece.moveTo(square);
+
+        if(!(piece.getMoved()))
+            piece.setMoved();
+
+    }
+
+    void removePiece(Piece piece){
+
+        PieceSet pieceSet =  board.pieceSets[piece.getPieceColor().ordinal()];
+
+        pieceSet.pieces.remove(piece);
+
+    }
+    Piece getCapturedPieceIfCaptured(PieceColor pickedPieceColor, Square square){
+
+        PieceColor capturedPieceColor = PieceColor.White;
+        Piece capturedPiece = null;
+
+        if(pickedPieceColor == PieceColor.White)
+            capturedPieceColor = PieceColor.Black;
+
+
+        int pieceIndex = board.pieceSets[capturedPieceColor.ordinal()].getPiecesBySquareCoordinates(square);
+
+        if(pieceIndex !=  board.pieceSets[capturedPieceColor.ordinal()].pieces.size()){
+            capturedPiece = board.pieceSets[capturedPieceColor.ordinal()].pieces.get(pieceIndex);
+            System.out.println("Pieza capturada: " + capturedPiece.getPieceType());
+        }
+        else
+            System.out.println("Ninguna pieza capturada");
+
+
+
+        return capturedPiece;
 
     }
 
@@ -149,30 +216,43 @@ public class Game {
 
         PieceSet pickedPieceSet;
         Piece pickedPiece;
+        Piece capturedPiece;
+        Square moveSelected;
+        List<Integer> movablePiecesList = new ArrayList<>();
+        int pieceIndex;
 
+
+        /////////Empiezan blancas por default////////////////
         System.out.println("Seleccione color: ");
         System.out.println("1.- " + PieceColor.Black);
         System.out.println("2.- " + PieceColor.White);
-
 
         pickedPieceSet = board.pieceSets[sc.nextByte()-1];
 
         System.out.println("Piezas disponibles para mover: ");
 
         for (int i = 0; i < pickedPieceSet.pieces.size(); i++) {
-            if(pickedPieceSet.pieces.get(i).getPieceType() == PieceType.Torre || pickedPieceSet.pieces.get(i).getPieceType() == PieceType.Peon || pickedPieceSet.pieces.get(i).getPieceType() == PieceType.Rey)
-                System.out.print((i+1)+".- "+pickedPieceSet.pieces.get(i).getPieceType() + "   |");
-            else if(pickedPieceSet.pieces.get(i).getPieceType() == PieceType.Reina)
-                System.out.print((i+1)+".- "+pickedPieceSet.pieces.get(i).getPieceType() + "  |");
-            else
+            if(pickedPieceSet.pieces.get(i).Moves().length != 0){
+                movablePiecesList.add(i);
                 System.out.print((i+1)+".- "+pickedPieceSet.pieces.get(i).getPieceType() + " |");
-            System.out.println(" " + Rank.values()[pickedPieceSet.pieces.get(i).getPlaceAt().getColumn()] + (8-pickedPieceSet.pieces.get(i).getPlaceAt().getRow()));
+                System.out.println(" " + Rank.values()[pickedPieceSet.pieces.get(i).getPlaceAt().getColumn()] + (8-pickedPieceSet.pieces.get(i).getPlaceAt().getRow()));
+            }
+
+        }
+        while (true){
+            System.out.println("De las anteriores piezas listadas, seleccione la que desea mover");
+            try {
+                pieceIndex = new Scanner(System.in).nextInt()-1;
+                break;
+            }
+            catch (Exception e){
+                System.out.println("Valor introducido no valido. ");
+            }
         }
 
-        System.out.println("De las anteriores piezas listadas, seleccione la que desea mover");
-        int pieceIndex = sc.nextInt()-1;
-
         pickedPiece = pickedPieceSet.pieces.get(pieceIndex);
+
+
 
         System.out.println();
         System.out.println("Pieza Seleccionada: " + pickedPiece.getPieceType() + "|" +Rank.values()[pickedPiece.getPlaceAt().getColumn()] + (8-pickedPiece.getPlaceAt().getRow()));
@@ -181,7 +261,11 @@ public class Game {
         printBoardWithPossiblesMovements(pickedPiece.Moves());
         System.out.println("Seleccione alguno: ");
 
-        makeMove(pickedPiece,pickedPiece.Moves()[sc.nextInt()-1]);
+        moveSelected = pickedPiece.Moves()[sc.nextInt()-1];
+        capturedPiece = getCapturedPieceIfCaptured(pickedPiece.pieceColor,moveSelected);
+        AddMove(pickedPiece.getPlaceAt(), moveSelected,pickedPiece,capturedPiece);
+
+
 
 
 
@@ -197,6 +281,7 @@ public class Game {
             ConsoleColors.BLACK_BACKGROUND + ConsoleColors.BLACK_BOLD + " \u2001 " + ConsoleColors.RESET,
             ConsoleColors.WHITE_BACKGROUND_SELECT+ ConsoleColors.WHITE_BOLD_BRIGHT + " \u2001 " + ConsoleColors.RESET,
             ConsoleColors.BLACK_BACKGROUND_SELECT + ConsoleColors.BLACK_BOLD + " \u2001 " + ConsoleColors.RESET,
+
 
     };
 
@@ -216,17 +301,7 @@ public class Game {
 
     }
 
-    boolean isSelectable(Square square[],int i, int j){
-        boolean isSelectable = false;
 
-        for (int k = 0; k < square.length; k++) {
-            if(square[k].getColumn() == j && square[k].getRow() == i)
-                isSelectable = true;
-
-        }
-
-        return  isSelectable;
-    }
 
 
 }
