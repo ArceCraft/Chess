@@ -42,7 +42,7 @@ public class Bishop extends Piece{
         return freeMoves.toArray(freeMovesArray);
     }
 
-    int[][] moveDirections ={
+    private int[][] moveDirections ={
 
         {1,1},
         {1,-1},

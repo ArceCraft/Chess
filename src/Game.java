@@ -262,7 +262,7 @@ public class Game {
         System.out.println("Seleccione alguno: ");
 
         moveSelected = pickedPiece.Moves()[sc.nextInt()-1];
-        capturedPiece = getCapturedPieceIfCaptured(pickedPiece.pieceColor,moveSelected);
+        capturedPiece = getCapturedPieceIfCaptured(pickedPiece.getPieceColor(),moveSelected);
         AddMove(pickedPiece.getPlaceAt(), moveSelected,pickedPiece,capturedPiece);
 
 

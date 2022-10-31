@@ -1,7 +1,7 @@
 public abstract  class Piece {
 
-    protected PieceColor pieceColor;
-    protected Square placeAt;
+    private PieceColor pieceColor;
+    private Square placeAt;
     private Boolean moved = false;
 
     private PieceType pieceType;
