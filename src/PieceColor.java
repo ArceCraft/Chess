@@ -1,4 +1,4 @@
 public enum PieceColor {
-    Black,
-    White
+    Negras,
+    Blancas
 }

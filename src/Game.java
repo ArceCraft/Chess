@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
@@ -14,12 +15,14 @@ public class Game {
 
     Game() {
 
+        turn = PieceColor.Blancas;
+
         Create();
 
 
         while (true){
             board.UpdateSquares();
-            PrintBoard();
+            board.PrintBoard();
             MoveRequest();
         }
 
@@ -40,14 +43,14 @@ public class Game {
 
         makeMove(piece,toSquare);
 
-
     }
 
     public void Create() {
 
         board = new Board();
-        players[0] = new Player(PieceColor.Black, new PlayerEngine());
-        players[1] = new Player(PieceColor.White, new PlayerEngine());
+
+        players[0] = new Player(PieceColor.Negras, new PlayerEngine());
+        players[1] = new Player(PieceColor.Blancas, new PlayerEngine());
 
     }
 
@@ -55,7 +58,46 @@ public class Game {
 
     }
 
-    public void IsChecked() {
+    public boolean IsChecked() {
+
+        Boolean enJaque = false;
+
+        PieceColor turnoContrario = PieceColor.Blancas;
+
+        if(turn == PieceColor.Blancas)
+            turnoContrario = PieceColor.Negras;
+
+        Piece rey = board.pieceSets[turn.ordinal()].pieces.get(board.pieceSets[1].pieces.size()-1);
+        PieceSet pieceSetContrarias = board.pieceSets[turnoContrario.ordinal()];
+
+        Square reyPos = new Square(rey.getPlaceAt().getRow(), rey.getPlaceAt().getColumn());
+
+        for(Piece piece : pieceSetContrarias.pieces){
+            for(Square moves : piece.Moves()){
+                if(moves.getRow() == reyPos.getRow() && moves.getColumn() == reyPos.getColumn() ){
+                    System.out.println("Rey "+ rey.getPieceColor() +" en jaque");
+                    enJaque = true;
+                    break;
+                }
+                else
+                    System.out.println("Rey "+ rey.getPieceColor() +" no en jaque");
+
+            }
+        }
+
+        return enJaque;
+    }
+
+    public Square[] nonCheckedMoves(Square[] moves){
+
+        ArrayList<Square> nonCheckedMoves = new ArrayList<>();
+
+
+
+        Square[] nonCheckedMovesArray = new Square[nonCheckedMoves.size()];
+
+
+        return nonCheckedMoves.toArray(nonCheckedMovesArray);
 
     }
 
@@ -67,110 +109,7 @@ public class Game {
 
     }
 
-    void PrintBoard() {
 
-        boolean cellPainting = true;
-
-        System.out.print(FrameGeneration());
-
-        for (int i = 0; i < 8; i++) {
-            System.out.print(FrameGeneration(String.valueOf(Rank.values()[i])));
-        }
-
-        for (int i = 0; i < 8; i++) {
-            System.out.println();
-            System.out.print(FrameGeneration(String.valueOf(8-i)));
-            cellPainting = !cellPainting;
-            for (int j = 0; j < 8; j++) {
-                cellPainting = !cellPainting;
-                if(board.getSquareFromSquares(i,j).getPiece() != null) {
-                    if (cellPainting)
-                        System.out.print(ConsoleColors.WHITE_BACKGROUND_BRIGHT + board.getSquareFromSquares(i,j).getPiece().getPieceSymbol() + ConsoleColors.RESET);
-                    else
-                        System.out.print(ConsoleColors.BLACK_BACKGROUND + board.getSquareFromSquares(i,j).getPiece().getPieceSymbol() + ConsoleColors.RESET);
-                }
-
-                else{
-                    if(cellPainting)
-                        System.out.print(boardSymbol[0]);
-                    else
-                        System.out.print(boardSymbol[1]);
-                }
-
-            }
-        }
-        System.out.println();
-    }
-
-    void printBoardWithPossiblesMovements(Square[] moves){
-
-        boolean cellPainting = true;
-
-
-        for (int i = 0; i < moves.length; i++) {
-            System.out.println((i+1)+".- "+ Rank.values()[moves[i].getColumn()] + "" + (8-moves[i].getRow()));
-        }
-
-
-        System.out.print(FrameGeneration());
-
-        for (int i = 0; i < 8; i++) {
-            System.out.print(FrameGeneration(String.valueOf(Rank.values()[i])));
-        }
-
-        for (int i = 0; i < 8; i++) {
-            System.out.println();
-            System.out.print(FrameGeneration(String.valueOf(8-i)));
-            cellPainting = !cellPainting;
-            for (int j = 0; j < 8; j++) {
-                cellPainting = !cellPainting;
-                if(board.getSquareFromSquares(i,j).getPiece() != null && isSelectable(moves,i,j)){
-
-                    if (cellPainting)
-                        System.out.print(ConsoleColors.WHITE_BACKGROUND_SELECT_ATTACK+ board.getSquareFromSquares(i,j).getPiece().getPieceSymbol() + ConsoleColors.RESET);
-                    else
-                        System.out.print(ConsoleColors.BLACK_BACKGROUND_SELECT_ATTACK + board.getSquareFromSquares(i,j).getPiece().getPieceSymbol() + ConsoleColors.RESET);
-                    continue;
-                }
-
-                else if(board.getSquareFromSquares(i,j).getPiece() != null && !isSelectable(moves,i,j)) {
-
-                    if (cellPainting)
-                        System.out.print(ConsoleColors.WHITE_BACKGROUND_BRIGHT + board.getSquareFromSquares(i,j).getPiece().getPieceSymbol() + ConsoleColors.RESET);
-                    else
-                        System.out.print(ConsoleColors.BLACK_BACKGROUND + board.getSquareFromSquares(i,j).getPiece().getPieceSymbol() + ConsoleColors.RESET);
-                }
-
-                else if(isSelectable(moves,i,j) && board.getSquareFromSquares(i,j).getPiece() == null ){
-                            if (cellPainting)
-                                System.out.print(boardSymbol[2]);
-                            else
-                                System.out.print(boardSymbol[3]);
-
-                        }
-                else {
-                    if (cellPainting)
-                        System.out.print(boardSymbol[0]);
-                    else
-                        System.out.print(boardSymbol[1]);
-                }
-
-            }
-        }
-        System.out.println();
-    }
-
-    boolean isSelectable(Square square[],int i, int j){
-        boolean isSelectable = false;
-
-        for (int k = 0; k < square.length; k++) {
-            if(square[k].getColumn() == j && square[k].getRow() == i)
-                isSelectable = true;
-
-        }
-
-        return  isSelectable;
-    }
 
     void makeMove(Piece piece,Square square){
 
@@ -188,16 +127,19 @@ public class Game {
         pieceSet.pieces.remove(piece);
 
     }
+
+
+
     Piece getCapturedPieceIfCaptured(PieceColor pickedPieceColor, Square square){
 
-        PieceColor capturedPieceColor = PieceColor.White;
+        PieceColor capturedPieceColor = PieceColor.Blancas;
         Piece capturedPiece = null;
 
-        if(pickedPieceColor == PieceColor.White)
-            capturedPieceColor = PieceColor.Black;
+        if(pickedPieceColor == PieceColor.Blancas)
+            capturedPieceColor = PieceColor.Negras;
 
 
-        int pieceIndex = board.pieceSets[capturedPieceColor.ordinal()].getPiecesBySquareCoordinates(square);
+        int pieceIndex = board.pieceSets[capturedPieceColor.ordinal()].getPieceIndexBySquareCoordinates(square);
 
         if(pieceIndex !=  board.pieceSets[capturedPieceColor.ordinal()].pieces.size()){
             capturedPiece = board.pieceSets[capturedPieceColor.ordinal()].pieces.get(pieceIndex);
@@ -222,14 +164,12 @@ public class Game {
         int pieceIndex;
 
 
-        /////////Empiezan blancas por default////////////////
-        System.out.println("Seleccione color: ");
-        System.out.println("1.- " + PieceColor.Black);
-        System.out.println("2.- " + PieceColor.White);
+        System.out.println("Turno de las " + turn);
 
-        pickedPieceSet = board.pieceSets[sc.nextByte()-1];
+        pickedPieceSet = board.pieceSets[turn.ordinal()];
 
         System.out.println("Piezas disponibles para mover: ");
+
 
         for (int i = 0; i < pickedPieceSet.pieces.size(); i++) {
             if(pickedPieceSet.pieces.get(i).Moves().length != 0){
@@ -237,8 +177,9 @@ public class Game {
                 System.out.print((i+1)+".- "+pickedPieceSet.pieces.get(i).getPieceType() + " |");
                 System.out.println(" " + Rank.values()[pickedPieceSet.pieces.get(i).getPlaceAt().getColumn()] + (8-pickedPieceSet.pieces.get(i).getPlaceAt().getRow()));
             }
-
         }
+
+
         while (true){
             System.out.println("De las anteriores piezas listadas, seleccione la que desea mover");
             try {
@@ -253,54 +194,34 @@ public class Game {
         pickedPiece = pickedPieceSet.pieces.get(pieceIndex);
 
 
-
         System.out.println();
         System.out.println("Pieza Seleccionada: " + pickedPiece.getPieceType() + "|" +Rank.values()[pickedPiece.getPlaceAt().getColumn()] + (8-pickedPiece.getPlaceAt().getRow()));
 
         System.out.println("Movimientos disponibles: ");
-        printBoardWithPossiblesMovements(pickedPiece.Moves());
-        System.out.println("Seleccione alguno: ");
+        board.printBoardWithPossiblesMovements(pickedPiece.Moves());
 
+        System.out.println("Seleccione alguno: ");
         moveSelected = pickedPiece.Moves()[sc.nextInt()-1];
         capturedPiece = getCapturedPieceIfCaptured(pickedPiece.getPieceColor(),moveSelected);
         AddMove(pickedPiece.getPlaceAt(), moveSelected,pickedPiece,capturedPiece);
 
+        setTurn(turn);
 
-
-
-
-
-    }
-
-
-
-
-    ////////////////////Recursos para imprimir//////////////////
-    String[] boardSymbol = {
-            ConsoleColors.WHITE_BACKGROUND_BRIGHT + ConsoleColors.WHITE_BOLD_BRIGHT + " \u2001 " + ConsoleColors.RESET,
-            ConsoleColors.BLACK_BACKGROUND + ConsoleColors.BLACK_BOLD + " \u2001 " + ConsoleColors.RESET,
-            ConsoleColors.WHITE_BACKGROUND_SELECT+ ConsoleColors.WHITE_BOLD_BRIGHT + " \u2001 " + ConsoleColors.RESET,
-            ConsoleColors.BLACK_BACKGROUND_SELECT + ConsoleColors.BLACK_BOLD + " \u2001 " + ConsoleColors.RESET,
-
-
-    };
-
-    String FrameGeneration(String value){
-
-        String string = ConsoleColors.BROWN_BACKGROUND + ConsoleColors.BLACK_BRIGHT + " " + value+ ConsoleColors.BROWN_BRIGHT+ "\u2001"  + ConsoleColors.RESET;
-
-        return string;
+        IsChecked();
 
     }
 
-    String FrameGeneration(){
+    void setTurn(PieceColor actualTurn) {
 
-        String string = ConsoleColors.BROWN_BACKGROUND + ConsoleColors.BROWN_BRIGHT +" "+ " " + "\u2001"  + ConsoleColors.RESET;
+        PieceColor turn = actualTurn;
 
-        return string;
+        if (actualTurn == PieceColor.Negras)
+            turn = PieceColor.Blancas;
+        if (actualTurn == PieceColor.Blancas)
+            turn = PieceColor.Negras;
 
+        this.turn = turn;
     }
-
 
 
 

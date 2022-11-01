@@ -10,7 +10,7 @@ public class Pawn extends Piece{
         super(board, pieceColor);
         setPieceType(PieceType.Peon);
 
-        if(pieceColor == PieceColor.White)
+        if(pieceColor == PieceColor.Blancas)
             moveDirection = MoveDirection.Up;
         else
             moveDirection = MoveDirection.Down;
@@ -67,7 +67,7 @@ public class Pawn extends Piece{
                 for (int i = 0; i < downDirections.length; i++) {
                     if((getPlaceAt().getRow() + downDirections[i][0])<0 ||(getPlaceAt().getRow() + downDirections[i][0]) >= 8 || (getPlaceAt().getColumn()+downDirections[i][1]) < 0 || (getPlaceAt().getColumn()+downDirections[i][1]) >=8)
                         continue;
-                    else if (CaptureMoveValidation(new Square(getPlaceAt().getRow() + + downDirections[i][0], getPlaceAt().getColumn()+downDirections[i][1])))
+                    else if (CaptureMoveValidation(new Square(getPlaceAt().getRow() + downDirections[i][0], getPlaceAt().getColumn()+downDirections[i][1])))
                         freeMoves.add(new Square(getPlaceAt().getRow() + downDirections[i][0], getPlaceAt().getColumn()+downDirections[i][1]));
                 }
 
