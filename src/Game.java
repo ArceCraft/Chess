@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
@@ -18,13 +17,11 @@ public class Game {
         turn = PieceColor.Blancas;
 
         Create();
-
-
         while (true){
-            board.UpdateSquares();
             board.PrintBoard();
             MoveRequest();
         }
+
 
 
 
@@ -73,40 +70,21 @@ public class Game {
         Square reyPos = new Square(rey.getPlaceAt().getRow(), rey.getPlaceAt().getColumn());
 
         for(Piece piece : pieceSetContrarias.pieces){
-            for(Square moves : piece.Moves()){
-                if(moves.getRow() == reyPos.getRow() && moves.getColumn() == reyPos.getColumn() ){
-                    System.out.println("Rey "+ rey.getPieceColor() +" en jaque");
-                    enJaque = true;
-                    break;
+            if(piece.getPieceType() != PieceType.Rey){
+                for(Square moves : piece.Moves()){
+                    if(Square.squareComparator(moves,reyPos)){
+                        System.out.println("Rey "+ rey.getPieceColor() +" en jaque");
+                        enJaque = true;
+                        break;
+                    }
+                    else
+                        System.out.println("Rey "+ rey.getPieceColor() +" no en jaque");
                 }
-                else
-                    System.out.println("Rey "+ rey.getPieceColor() +" no en jaque");
-
             }
+
         }
 
         return enJaque;
-    }
-
-    public Square[] nonCheckedMoves(Square[] moves){
-
-        ArrayList<Square> nonCheckedMoves = new ArrayList<>();
-
-
-
-        Square[] nonCheckedMovesArray = new Square[nonCheckedMoves.size()];
-
-
-        return nonCheckedMoves.toArray(nonCheckedMovesArray);
-
-    }
-
-    public void Operation() {
-
-    }
-
-    public void IsCheckMated() {
-
     }
 
 
@@ -198,6 +176,7 @@ public class Game {
         System.out.println("Pieza Seleccionada: " + pickedPiece.getPieceType() + "|" +Rank.values()[pickedPiece.getPlaceAt().getColumn()] + (8-pickedPiece.getPlaceAt().getRow()));
 
         System.out.println("Movimientos disponibles: ");
+
         board.printBoardWithPossiblesMovements(pickedPiece.Moves());
 
         System.out.println("Seleccione alguno: ");

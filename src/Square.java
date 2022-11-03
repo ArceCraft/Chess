@@ -2,12 +2,28 @@ public class Square {
     private int row;
     private int column;
 
-    private Piece piece;
 
     Square(int row, int column){
 
         this.row = row;
         this.column = column;
+
+    }
+
+
+    static boolean squareComparator(Square squareFrom,Square squareTo){
+
+        boolean areEqual = false;
+
+        if(squareFrom.getRow() == squareTo.getRow() && squareFrom.getColumn() == squareTo.getColumn())
+            areEqual = true;
+
+        return  areEqual;
+    }
+
+    static Square squareAddition(Square squareFrom,Square squareTo){
+
+        return new Square(squareFrom.getRow()+ squareFrom.getRow(), squareFrom.getColumn() + squareTo.getColumn());
 
     }
 
@@ -19,11 +35,4 @@ public class Square {
         return column;
     }
 
-    Piece getPiece(){
-        return  piece;
-    }
-
-    void setPiece(Piece piece){
-        this.piece = piece;
-    }
 }

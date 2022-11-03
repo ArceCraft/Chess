@@ -13,7 +13,6 @@ public class King extends Piece{
     public Square[] Moves() {
 
         List<Square> freeMoves = new ArrayList<>();
-        List<Square> captureMoves = new ArrayList<>();
 
 
         int pivotRow = getPlaceAt().getRow();
@@ -25,8 +24,10 @@ public class King extends Piece{
 
                 if(pivotRow + moveDirection[0]*i < 0 || pivotRow + moveDirection[0]*i >= 8 || pivotColum + moveDirection[1]*i < 0 || pivotColum + moveDirection[1]*i >= 8)
                     break;
-                else if(FreeMoveValidation(new Square(pivotRow + moveDirection[0]*i, pivotColum + moveDirection[1]*i)))
+                else if(FreeMoveValidation(new Square(pivotRow + moveDirection[0]*i, pivotColum + moveDirection[1]*i))){
                     break;
+                }
+
                 else if(CaptureMoveValidation(new Square(pivotRow + moveDirection[0]*i, pivotColum + moveDirection[1]*i))){
                     freeMoves.add(new Square(pivotRow + moveDirection[0]*i, pivotColum + moveDirection[1]*i));
                     break;
@@ -35,6 +36,17 @@ public class King extends Piece{
                     freeMoves.add(new Square(pivotRow + moveDirection[0]*i, pivotColum + moveDirection[1]*i));
             }
 
+        }
+
+        for(Square moves : freeMoves){
+            for(Piece piece : board.pieceSets[(this.getPieceColor().ordinal()-1)*(-1)].pieces){
+
+                for(Square possibleMoves : piece.Moves()){
+                    if(possibleMoves.getColumn() == moves.getColumn() && possibleMoves.getRow() == moves.getRow())
+                        freeMoves.remove(moves);
+                }
+
+            }
         }
 
 

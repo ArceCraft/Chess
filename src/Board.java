@@ -12,41 +12,12 @@ public class Board {
 
     public void Create(){
 
+        SquaresFiller();
         pieceSets[0] = new PieceSet(this, PieceColor.Negras, pieceSetOnTop);
         pieceSets[1] = new PieceSet(this, PieceColor.Blancas, pieceSetOnTop);
 
-
-        UpdateSquares();
-
-
     }
 
-    public void FillSquaresWithPieces(PieceSet pieceSet){
-
-        for (int i = 0; i < squares.length; i++) {
-            for (int j = 0; j < squares.length; j++) {
-
-                for (Piece piece : pieceSet.pieces) {
-                    if ((piece.getPlaceAt().getRow() == i) && (piece.getPlaceAt().getColumn() == j)) {
-                        squares[i][j].setPiece(piece);
-                    }
-
-                }
-
-            }
-
-        }
-
-
-    }
-
-    void UpdateSquares(){
-
-        SquaresFiller();
-        FillSquaresWithPieces(pieceSets[0]);
-        FillSquaresWithPieces(pieceSets[1]);
-
-    }
 
     void SquaresFiller(){
         for (int i = 0; i < squares.length; i++) {
@@ -56,11 +27,19 @@ public class Board {
         }
     }
 
-    Square getSquareFromSquares(int row, int colum){
+    Piece getPieceOnBoardSquare(Square square){
 
-        return squares[row][colum];
+        Piece pieceAtSquare = null;
 
+        for(PieceSet pieceSet : pieceSets){
+            for(Piece piece : pieceSet.pieces){
+                if(Square.squareComparator(piece.getPlaceAt(),square))
+                    pieceAtSquare = piece;
+            }
+        }
+        return  pieceAtSquare;
     }
+
 
     void PrintBoard() {
 
@@ -72,17 +51,20 @@ public class Board {
             System.out.print(FrameGeneration(String.valueOf(Rank.values()[i])));
         }
 
-        for (int i = 0; i < 8; i++) {
+
+        for (int i = 0; i < squares.length ; i++) {
+
             System.out.println();
-            System.out.print(FrameGeneration(String.valueOf(8-i)));
+            System.out.print(FrameGeneration(String.valueOf(rowValues[i])));
             cellPainting = !cellPainting;
-            for (int j = 0; j < 8; j++) {
+
+            for (Square square : squares[i]) {
                 cellPainting = !cellPainting;
-                if(getSquareFromSquares(i,j).getPiece() != null) {
+                if(getPieceOnBoardSquare(square) != null) {
                     if (cellPainting)
-                        System.out.print(ConsoleColors.WHITE_BACKGROUND_BRIGHT + getSquareFromSquares(i,j).getPiece().getPieceSymbol() + ConsoleColors.RESET);
+                        System.out.print(ConsoleColors.WHITE_BACKGROUND_BRIGHT + getPieceOnBoardSquare(square).getPieceSymbol() + ConsoleColors.RESET);
                     else
-                        System.out.print(ConsoleColors.BLACK_BACKGROUND + getSquareFromSquares(i,j).getPiece().getPieceSymbol() + ConsoleColors.RESET);
+                        System.out.print(ConsoleColors.BLACK_BACKGROUND + getPieceOnBoardSquare(square).getPieceSymbol() + ConsoleColors.RESET);
                 }
 
                 else{
@@ -113,30 +95,33 @@ public class Board {
             System.out.print(FrameGeneration(String.valueOf(Rank.values()[i])));
         }
 
-        for (int i = 0; i < 8; i++) {
+        for (int i = 0; i < squares.length ; i++) {
+
             System.out.println();
-            System.out.print(FrameGeneration(String.valueOf(8-i)));
+            System.out.print(FrameGeneration(String.valueOf(rowValues[i])));
             cellPainting = !cellPainting;
-            for (int j = 0; j < 8; j++) {
+
+            for (Square square : squares[i]) {
                 cellPainting = !cellPainting;
-                if(getSquareFromSquares(i,j).getPiece() != null && isSelectable(moves,i,j)){
+
+                if(getPieceOnBoardSquare(square) != null && isSelectable(moves,square)){
 
                     if (cellPainting)
-                        System.out.print(ConsoleColors.WHITE_BACKGROUND_SELECT_ATTACK+ getSquareFromSquares(i,j).getPiece().getPieceSymbol() + ConsoleColors.RESET);
+                        System.out.print(ConsoleColors.WHITE_BACKGROUND_SELECT_ATTACK+ getPieceOnBoardSquare(square).getPieceSymbol() + ConsoleColors.RESET);
                     else
-                        System.out.print(ConsoleColors.BLACK_BACKGROUND_SELECT_ATTACK + getSquareFromSquares(i,j).getPiece().getPieceSymbol() + ConsoleColors.RESET);
+                        System.out.print(ConsoleColors.BLACK_BACKGROUND_SELECT_ATTACK + getPieceOnBoardSquare(square).getPieceSymbol() + ConsoleColors.RESET);
                     continue;
                 }
 
-                else if(getSquareFromSquares(i,j).getPiece() != null && !isSelectable(moves,i,j)) {
+                else if(getPieceOnBoardSquare(square) != null && !isSelectable(moves,square)) {
 
                     if (cellPainting)
-                        System.out.print(ConsoleColors.WHITE_BACKGROUND_BRIGHT + getSquareFromSquares(i,j).getPiece().getPieceSymbol() + ConsoleColors.RESET);
+                        System.out.print(ConsoleColors.WHITE_BACKGROUND_BRIGHT + getPieceOnBoardSquare(square).getPieceSymbol() + ConsoleColors.RESET);
                     else
-                        System.out.print(ConsoleColors.BLACK_BACKGROUND + getSquareFromSquares(i,j).getPiece().getPieceSymbol() + ConsoleColors.RESET);
+                        System.out.print(ConsoleColors.BLACK_BACKGROUND + getPieceOnBoardSquare(square).getPieceSymbol() + ConsoleColors.RESET);
                 }
 
-                else if(isSelectable(moves,i,j) && getSquareFromSquares(i,j).getPiece() == null ){
+                else if(isSelectable(moves,square) && getPieceOnBoardSquare(square) == null ){
                     if (cellPainting)
                         System.out.print(boardSymbol[2]);
                     else
@@ -155,11 +140,11 @@ public class Board {
         System.out.println();
     }
 
-    boolean isSelectable(Square square[],int i, int j){
+    boolean isSelectable(Square squares[], Square square){
         boolean isSelectable = false;
 
-        for (int k = 0; k < square.length; k++) {
-            if(square[k].getColumn() == j && square[k].getRow() == i)
+        for (int k = 0; k < squares.length; k++) {
+            if(Square.squareComparator(squares[k],square))
                 isSelectable = true;
 
         }
@@ -190,6 +175,11 @@ public class Board {
         return string;
 
     }
+
+    int[] rowValues = {
+      8,7,6,5,4,3,2,1
+    };
+
 
 }
 

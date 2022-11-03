@@ -26,7 +26,7 @@ public abstract  class Piece {
 
         boolean exist = false;
 
-        if(board.getSquareFromSquares(square.getRow(),square.getColumn()).getPiece() != null && board.getSquareFromSquares(square.getRow(),square.getColumn()).getPiece().getPieceColor() == pieceColor )
+        if(board.getPieceOnBoardSquare(square) != null && board.getPieceOnBoardSquare(square).getPieceColor() == pieceColor )
             exist=true;
 
         return exist;
@@ -37,12 +37,14 @@ public abstract  class Piece {
 
         boolean exist = false;
 
-        if(board.getSquareFromSquares(square.getRow(),square.getColumn()).getPiece() != null && board.getSquareFromSquares(square.getRow(),square.getColumn()).getPiece().getPieceColor() != pieceColor )
+        if(board.getPieceOnBoardSquare(square) != null && board.getPieceOnBoardSquare(square).getPieceColor() != pieceColor )
             exist=true;
 
         return exist;
 
     }
+
+
 
 
     ///////////////////SETS///////////////////////
