@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Pawn extends Piece{
@@ -28,15 +29,21 @@ public class Pawn extends Piece{
         if(!this.getMoved())
             range = 2;
 
+        int row = getPlaceAt().getRow();
+        int column = getPlaceAt().getColumn();
+
         switch (moveDirection) {
             case Up:
 
 
                 for (int i = 1; i < range+1; i++) {
-                    if(FreeMoveValidation(new Square(getPlaceAt().getRow()-1*i, getPlaceAt().getColumn())) || CaptureMoveValidation(new Square(getPlaceAt().getRow()-1*i, getPlaceAt().getColumn())))
-                        continue;
+
+                    if(row - i < 0)
+                        break;
+                    if(FreeMoveValidation(new Square(row - i, column)) || CaptureMoveValidation(new Square(row - i, column)))
+                        break;
                     else
-                        freeMoves.add(new Square(getPlaceAt().getRow()-1*i, getPlaceAt().getColumn()));
+                        freeMoves.add(new Square(row - i, column));
                 }
 
 
@@ -45,30 +52,33 @@ public class Pawn extends Piece{
             case Down:
 
                 for (int i = 1; i < range+1; i++) {
-                    if(FreeMoveValidation(new Square(getPlaceAt().getRow()+1*i, getPlaceAt().getColumn())) || CaptureMoveValidation(new Square(getPlaceAt().getRow()+1*i, getPlaceAt().getColumn())))
-                        continue;
+                    if(row + i >= 8)
+                        break;
+                    if(FreeMoveValidation(new Square(row + i, column)) || CaptureMoveValidation(new Square(row + i, column)))
+                        break;
                     else
-                        freeMoves.add(new Square(getPlaceAt().getRow()+1*i, getPlaceAt().getColumn()));
+                        freeMoves.add(new Square(row + i, column));
                 }
                 break;
         }
+
         switch (moveDirection) {
             case Up:
                 for (int i = 0; i < upDirections.length; i++) {
-                    if((getPlaceAt().getRow() + upDirections[i][0])<0 ||(getPlaceAt().getRow() + upDirections[i][0]) >= 8 || (getPlaceAt().getColumn()+upDirections[i][1]) < 0 || (getPlaceAt().getColumn()+upDirections[i][1]) >=8)
+                    if((row + upDirections[i][0])<0 ||(row + upDirections[i][0]) >= 8 || (column +upDirections[i][1]) < 0 || (column +upDirections[i][1]) >=8)
                         continue;
-                    else if (CaptureMoveValidation(new Square(getPlaceAt().getRow() + upDirections[i][0], getPlaceAt().getColumn()+upDirections[i][1])))
-                        freeMoves.add(new Square(getPlaceAt().getRow() + upDirections[i][0], getPlaceAt().getColumn()+upDirections[i][1]));
+                    else if (CaptureMoveValidation(new Square(row + upDirections[i][0], column +upDirections[i][1])))
+                        freeMoves.add(new Square(row + upDirections[i][0], column +upDirections[i][1]));
                 }
 
                 break;
 
             case Down:
                 for (int i = 0; i < downDirections.length; i++) {
-                    if((getPlaceAt().getRow() + downDirections[i][0])<0 ||(getPlaceAt().getRow() + downDirections[i][0]) >= 8 || (getPlaceAt().getColumn()+downDirections[i][1]) < 0 || (getPlaceAt().getColumn()+downDirections[i][1]) >=8)
+                    if((row + downDirections[i][0])<0 ||(row + downDirections[i][0]) >= 8 || (column +downDirections[i][1]) < 0 || (column +downDirections[i][1]) >=8)
                         continue;
-                    else if (CaptureMoveValidation(new Square(getPlaceAt().getRow() + downDirections[i][0], getPlaceAt().getColumn()+downDirections[i][1])))
-                        freeMoves.add(new Square(getPlaceAt().getRow() + downDirections[i][0], getPlaceAt().getColumn()+downDirections[i][1]));
+                    else if (CaptureMoveValidation(new Square(row + downDirections[i][0], column +downDirections[i][1])))
+                        freeMoves.add(new Square(row + downDirections[i][0], column +downDirections[i][1]));
                 }
 
                 break;
@@ -78,6 +88,50 @@ public class Pawn extends Piece{
         Square[] freeMovesArray = new Square[freeMoves.size()];
 
         return freeMoves.toArray(freeMovesArray);
+    }
+
+    @Override
+    public Square[] MovesWithOutCheckedMoves() {
+
+        ArrayList<Square> movesOfThePiece = new ArrayList<>(Arrays.asList(this.Moves()));
+        ArrayList<Square> movesOfThePieceWithPutCheckedMoves = new ArrayList<>();
+
+        movesOfThePieceWithPutCheckedMoves.addAll(movesOfThePiece);
+
+        for(Piece piece : board.pieceSets[(this.getPieceColor().ordinal()-1)*(-1)].pieces){
+            if(nonCheckMoveValidation(piece)){
+                Square[] movesOfTheContraryPiece = piece.Moves();
+                for(Square moveOfContraryPiece : movesOfTheContraryPiece){
+                    for(Square moveOfThePiece : movesOfThePiece){
+                        if(!Square.squareComparator(moveOfThePiece,moveOfContraryPiece))
+                            movesOfThePieceWithPutCheckedMoves.remove(moveOfThePiece);
+
+                    }
+                }
+            }
+
+
+        }
+
+        Square[] movesOfThePieceArray = new Square[movesOfThePieceWithPutCheckedMoves.size()];
+
+        return movesOfThePieceWithPutCheckedMoves.toArray(movesOfThePieceArray);
+
+    }
+
+
+    @Override
+    public Square[] MovesWhenInCheck( ) {
+
+
+
+
+        return new Square[0];
+    }
+
+    @Override
+    public Square[] PathOfAttacks() {
+        return new Square[0];
     }
 
     int[][] downDirections = {

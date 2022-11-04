@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Rook extends Piece{
@@ -39,6 +40,43 @@ public class Rook extends Piece{
 
         return freeMoves.toArray(freeMovesArray);
 
+    }
+
+    @Override
+    public Square[] MovesWithOutCheckedMoves() {
+        ArrayList<Square> movesOfThePiece = new ArrayList<>(Arrays.asList(this.Moves()));
+        ArrayList<Square> movesOfThePieceWithPutCheckedMoves = new ArrayList<>();
+
+        movesOfThePieceWithPutCheckedMoves.addAll(movesOfThePiece);
+
+        for(Piece piece : board.pieceSets[(this.getPieceColor().ordinal()-1)*(-1)].pieces){
+            if(nonCheckMoveValidation(piece)){
+                for(Square moveOfThePiece : movesOfThePiece){
+                    Square[] movesOfTheContraryPiece = piece.Moves();
+                    for(Square moveOfContraryPiece : movesOfTheContraryPiece){
+                        if(Square.squareComparator(moveOfThePiece,moveOfContraryPiece))
+                            movesOfThePieceWithPutCheckedMoves.remove(moveOfThePiece);
+
+                    }
+                }
+            }
+
+
+        }
+
+        Square[] movesOfThePieceArray = new Square[movesOfThePieceWithPutCheckedMoves.size()];
+
+        return movesOfThePieceWithPutCheckedMoves.toArray(movesOfThePieceArray);
+    }
+
+    @Override
+    public Square[] MovesWhenInCheck( ) {
+        return new Square[0];
+    }
+
+    @Override
+    public Square[] PathOfAttacks() {
+        return new Square[0];
     }
 
     int[][] moveDirections ={
