@@ -21,10 +21,6 @@ public class Game {
             board.PrintBoard();
             MoveRequest();
         }
-
-
-
-
     }
 
 
@@ -45,7 +41,6 @@ public class Game {
     public void Create() {
 
         board = new Board();
-
         players[0] = new Player(PieceColor.Negras, new PlayerEngine());
         players[1] = new Player(PieceColor.Blancas, new PlayerEngine());
 
@@ -59,26 +54,33 @@ public class Game {
 
         Boolean enJaque = false;
 
+        //Crea el turno de las piezas contrarias
         PieceColor turnoContrario = PieceColor.Blancas;
 
         if(turn == PieceColor.Blancas)
             turnoContrario = PieceColor.Negras;
 
+        //Toma la pieza "Rey" de las piezas del turno actual
         Piece rey = board.pieceSets[turn.ordinal()].pieces.get(board.pieceSets[1].pieces.size()-1);
+        //Toma el set completo de piezas contrarias
         PieceSet pieceSetContrarias = board.pieceSets[turnoContrario.ordinal()];
 
-        Square reyPos = new Square(rey.getPlaceAt().getRow(), rey.getPlaceAt().getColumn());
+        //Guarda la posición del rey para mejor manejo siguiente.
+        Square reyPos = rey.getPlaceAt();
+
+
+        /*Recorre todas las piezas del set de piezas contrarias y recorre los movimientos disponibles de cada pieza para saber si algún movimiento es igual a la
+        /posición del rey.*/
 
         for(Piece piece : pieceSetContrarias.pieces){
             if(piece.getPieceType() != PieceType.Rey){
-                for(Square moves : piece.Moves()){
+                Square[] movesOfThePiece = piece.Moves();
+                for(Square moves : movesOfThePiece){
                     if(Square.squareComparator(moves,reyPos)){
                         System.out.println("Rey "+ rey.getPieceColor() +" en jaque");
                         enJaque = true;
                         break;
                     }
-                    else
-                        System.out.println("Rey "+ rey.getPieceColor() +" no en jaque");
                 }
             }
 

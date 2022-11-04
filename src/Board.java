@@ -60,7 +60,9 @@ public class Board {
 
             for (Square square : squares[i]) {
                 cellPainting = !cellPainting;
+
                 if(getPieceOnBoardSquare(square) != null) {
+
                     if (cellPainting)
                         System.out.print(ConsoleColors.WHITE_BACKGROUND_BRIGHT + getPieceOnBoardSquare(square).getPieceSymbol() + ConsoleColors.RESET);
                     else
@@ -68,6 +70,7 @@ public class Board {
                 }
 
                 else{
+
                     if(cellPainting)
                         System.out.print(boardSymbol[0]);
                     else

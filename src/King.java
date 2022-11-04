@@ -3,8 +3,10 @@ import java.util.List;
 
 public class King extends Piece{
     King(Board board, PieceColor pieceColor) {
+
         super(board, pieceColor);
         setPieceType(PieceType.Rey);
+
     }
 
 
@@ -12,8 +14,13 @@ public class King extends Piece{
     @Override
     public Square[] Moves() {
 
+        //Creamos una lista con los movimientos sin tomar en cuenta si esa casilla puede poner en jaque al Rey
         List<Square> freeMoves = new ArrayList<>();
 
+        //Copia de la anterior lista pero eliminando los movimientos propios que pongan en jaque al rey
+        List<Square> freeMovesWithCheckedMoves = new ArrayList<>();
+
+        PieceSet pieceSet = board.pieceSets[(this.getPieceColor().ordinal()-1)*(-1)];
 
         int pivotRow = getPlaceAt().getRow();
         int pivotColum = getPlaceAt().getColumn();
@@ -30,29 +37,37 @@ public class King extends Piece{
 
                 else if(CaptureMoveValidation(new Square(pivotRow + moveDirection[0]*i, pivotColum + moveDirection[1]*i))){
                     freeMoves.add(new Square(pivotRow + moveDirection[0]*i, pivotColum + moveDirection[1]*i));
+                    //freeMovesWithCheckedMoves.add(new Square(pivotRow + moveDirection[0]*i, pivotColum + moveDirection[1]*i));
                     break;
                 }
-                else
+                else{
                     freeMoves.add(new Square(pivotRow + moveDirection[0]*i, pivotColum + moveDirection[1]*i));
-            }
-
-        }
-
-        for(Square moves : freeMoves){
-            for(Piece piece : board.pieceSets[(this.getPieceColor().ordinal()-1)*(-1)].pieces){
-
-                for(Square possibleMoves : piece.Moves()){
-                    if(possibleMoves.getColumn() == moves.getColumn() && possibleMoves.getRow() == moves.getRow())
-                        freeMoves.remove(moves);
+                    //freeMovesWithCheckedMoves.add(new Square(pivotRow + moveDirection[0]*i, pivotColum + moveDirection[1]*i));
                 }
 
             }
+
+        }
+
+       freeMovesWithCheckedMoves.addAll(freeMoves);
+
+
+        for(Square moves : freeMoves){
+            for(Piece piece : pieceSet.pieces){
+                if(piece.getPieceType() != PieceType.Rey){
+                    Square[] movesOfPiece = piece.Moves();
+                    for(Square possibleMoves : movesOfPiece){
+                        if(Square.squareComparator(possibleMoves,moves))
+                            freeMovesWithCheckedMoves.remove(moves);
+                    }
+                }
+            }
         }
 
 
-        Square[] freeMovesArray = new Square[freeMoves.size()];
+        Square[] freeMovesArray = new Square[freeMovesWithCheckedMoves.size()];
 
-        return freeMoves.toArray(freeMovesArray);
+        return freeMovesWithCheckedMoves.toArray(freeMovesArray);
     }
 
     int[][] moveDirections ={
