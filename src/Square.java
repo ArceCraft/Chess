@@ -21,11 +21,6 @@ public class Square {
         return  areEqual;
     }
 
-    static Square squareAddition(Square squareFrom,Square squareTo){
-
-        return new Square(squareFrom.getRow()+ squareFrom.getRow(), squareFrom.getColumn() + squareTo.getColumn());
-
-    }
 
     int getRow(){
         return row;

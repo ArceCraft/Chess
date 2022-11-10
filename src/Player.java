@@ -10,4 +10,9 @@ public class Player {
 
     }
 
+    int makeMove(){
+
+        return 1;
+    }
+
 }

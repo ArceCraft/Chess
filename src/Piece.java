@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 public abstract  class Piece {
 
     private PieceColor pieceColor;
@@ -22,12 +24,14 @@ public abstract  class Piece {
     public abstract Square[] Moves();
 
     //Movimientos que la pieza pueda hacer sin entrar en Jaque
-    public abstract Square[] MovesWithOutCheckedMoves();
+    public abstract Square[] MovesWithOutCheckedMoves(); //Moves to avoid Check
 
     //Movimientos que la pieza puede realizar para sacar de jaque al Rey.
     public abstract Square[] MovesWhenInCheck();
 
     public abstract Square[] PathOfAttacks();
+    public abstract Square[] VulnerableArea();
+    public  abstract Square[] PathToKing();
 
 
     public Boolean FreeMoveValidation(Square square){
@@ -38,6 +42,33 @@ public abstract  class Piece {
             exist=true;
 
         return exist;
+
+    }
+
+    public Piece[] CheckinPieces(){
+
+        ArrayList<Piece> checkinPieces = new ArrayList<>();
+
+        PieceColor turnoContrario = PieceColor.Blancas;
+
+
+        if(this.pieceColor == PieceColor.Blancas)
+            turnoContrario = PieceColor.Negras;
+
+        PieceSet pieceSetContrarias = board.pieceSets[turnoContrario.ordinal()];
+
+        Piece rey = board.pieceSets[this.pieceColor.ordinal()].pieces.get(board.pieceSets[this.pieceColor.ordinal()].pieces.size()-1);
+
+        for(Piece contraryPiece : pieceSetContrarias.pieces){
+            for(Square movesOfTheContrarypiece : contraryPiece.Moves()){
+                if(Square.squareComparator(rey.getPlaceAt(),movesOfTheContrarypiece))
+                    checkinPieces.add(contraryPiece);
+            }
+        }
+
+        Piece[] checkinPiecesArray = new Piece[checkinPieces.size()];
+
+        return checkinPieces.toArray(checkinPiecesArray);
 
     }
 
@@ -52,30 +83,49 @@ public abstract  class Piece {
 
     }
 
-    public  Boolean nonCheckMoveValidation(Piece piece){
+    public Boolean KingValidation(Square square){
+
+        boolean exist = false;
+        if(board.getPieceOnBoardSquare(square) != null && board.getPieceOnBoardSquare(square).getPieceType() == PieceType.Rey && board.getPieceOnBoardSquare(square).getPieceColor() != pieceColor)
+            exist = true;
+
+        return exist;
+    }
+
+
+    //Metodo para validar si la pieza está entre el rey y una los movimientos de una pieza contraria que se pasa por el parametro afecten al rey.
+    public  Boolean isBetween(Piece piece){
 
         boolean isBetween = false;
         boolean comprobation1 = false;
         boolean comprobation2 = false;
 
-        Piece rey = board.pieceSets[pieceColor.ordinal()].pieces.get(board.pieceSets[pieceColor.ordinal()].pieces.size()-1);
 
+        //Tomamos al rey del turno actual
+        Piece rey = board.pieceSets[this.pieceColor.ordinal()].pieces.get(board.pieceSets[this.pieceColor.ordinal()].pieces.size()-1);
+
+
+        //Tomamos los movimientos de la pieza contraria
         for(Square moves : piece.Moves()){
             if(Square.squareComparator(this.getPlaceAt(),moves))
                 comprobation1 = true;
         }
 
+        //Tomamos el area de vulnerabilidad del rey
         for(Square moves : rey.PathOfAttacks()){
             if(Square.squareComparator(this.getPlaceAt(),moves))
                 comprobation2 = true;
         }
 
+        //Si las dos anteriores coinciden entonces la pieza que ejecuta este metodo está entre el rey y la pieza que lo puede poner en jaque.
         if(comprobation1 && comprobation2)
             isBetween = true;
 
         return isBetween;
 
     }
+
+
 
 
 

@@ -45,24 +45,30 @@ public class Bishop extends Piece{
 
     @Override
     public Square[] MovesWithOutCheckedMoves() {
+
         ArrayList<Square> movesOfThePiece = new ArrayList<>(Arrays.asList(this.Moves()));
         ArrayList<Square> movesOfThePieceWithPutCheckedMoves = new ArrayList<>();
 
         movesOfThePieceWithPutCheckedMoves.addAll(movesOfThePiece);
 
-        for(Piece piece : board.pieceSets[(this.getPieceColor().ordinal()-1)*(-1)].pieces){
-            if(nonCheckMoveValidation(piece)){
+        //Para cada pieza del set contrario
+        for(Piece contraryPiece : board.pieceSets[(this.getPieceColor().ordinal()-1)*(-1)].pieces){
+            //Comprobar si la pieza esta está entre el rey y los movimientos de pieza contraria.
+            if(isBetween(contraryPiece)){
+                //Toma los movientos posibles de la pieza.
                 for(Square moveOfThePiece : movesOfThePiece){
-                    Square[] movesOfTheContraryPiece = piece.Moves();
+                    //Guarda los movimientos de la pieza contraria.
+                    Square[] movesOfTheContraryPiece = contraryPiece.PathToKing();
+                    boolean movementExistence = false;
                     for(Square moveOfContraryPiece : movesOfTheContraryPiece){
-                        if(Square.squareComparator(moveOfThePiece,moveOfContraryPiece))
-                            movesOfThePieceWithPutCheckedMoves.remove(moveOfThePiece);
-
+                        if((Square.squareComparator(moveOfThePiece,moveOfContraryPiece) || Square.squareComparator(moveOfThePiece,contraryPiece.getPlaceAt())))
+                            movementExistence = true;
                     }
+                    if(!movementExistence)
+                        movesOfThePieceWithPutCheckedMoves.remove(moveOfThePiece);
+
                 }
             }
-
-
         }
 
         Square[] movesOfThePieceArray = new Square[movesOfThePieceWithPutCheckedMoves.size()];
@@ -72,7 +78,40 @@ public class Bishop extends Piece{
 
     @Override
     public Square[] MovesWhenInCheck( ) {
-        return new Square[0];
+
+        ArrayList<Square> movesOfThePiece = new ArrayList<>(Arrays.asList(this.Moves()));
+        ArrayList<Square> movesOfThePieceWithPutCheckedMoves = new ArrayList<>();
+
+        movesOfThePieceWithPutCheckedMoves.addAll(movesOfThePiece);
+        Piece[] setOfCheckinPieces = CheckinPieces();
+
+        if(setOfCheckinPieces.length == 1){
+            //Para cada pieza del set contrario
+            for(Piece contraryPiece : setOfCheckinPieces){
+                //Toma los movimientos posibles de la pieza actual
+                for(Square moveOfThePiece : movesOfThePiece){
+                    //Guarda los movimientos que se dirigen al rey de la pieza contraria.
+                    Square[] movesOfTheContraryPiece = contraryPiece.PathToKing();
+                    boolean movementExistence = false;
+                    for(Square moveOfContraryPiece : movesOfTheContraryPiece){
+                        if((Square.squareComparator(moveOfThePiece,moveOfContraryPiece) || Square.squareComparator(moveOfThePiece,contraryPiece.getPlaceAt())))
+                            movementExistence = true;
+                    }
+
+                    if(!movementExistence)
+                        movesOfThePieceWithPutCheckedMoves.remove(moveOfThePiece);
+
+                }
+            }
+        }
+        else
+            movesOfThePieceWithPutCheckedMoves.clear();
+
+
+
+        Square[] movesOfThePieceArray = new Square[movesOfThePieceWithPutCheckedMoves.size()];
+
+        return movesOfThePieceWithPutCheckedMoves.toArray(movesOfThePieceArray);
     }
 
     @Override
@@ -80,11 +119,57 @@ public class Bishop extends Piece{
         return new Square[0];
     }
 
-    private int[][] moveDirections ={
+    @Override
+    public Square[] VulnerableArea() {
+        return new Square[0];
+    }
 
-        {1,1},
-        {1,-1},
-        {-1,1},
-        {-1,-1}
+    @Override
+    public Square[] PathToKing() {
+
+        List<Square> movesToKing = new ArrayList<>();
+
+
+        int pivotRow = getPlaceAt().getRow();
+        int pivotColum = getPlaceAt().getColumn();
+        boolean kingExist = false;
+
+        for (int[] moveDirection : moveDirections) {
+
+            for (int i = 1; i < 8; i++) {
+                if(pivotRow + moveDirection[0]*i < 0 || pivotRow + moveDirection[0]*i >= 8 || pivotColum + moveDirection[1]*i < 0 || pivotColum + moveDirection[1]*i >= 8)
+                    break;
+                else if(KingValidation(new Square(pivotRow + moveDirection[0]*i, pivotColum + moveDirection[1]*i))){
+                    movesToKing.add(new Square(pivotRow + moveDirection[0]*i, pivotColum + moveDirection[1]*i));
+                    kingExist = true;
+                    break;
+                }
+                else
+                    movesToKing.add(new Square(pivotRow + moveDirection[0]*i, pivotColum + moveDirection[1]*i));
+            }
+
+            if (!kingExist){
+                movesToKing.clear();
+            }
+
+            else
+                break;
+
+        }
+
+        movesToKing.add(this.getPlaceAt());
+
+        Square[] movesToKingArray = new Square[movesToKing.size()];
+
+        return movesToKing.toArray(movesToKingArray);
+    }
+
+    private int[][] moveDirections ={ //int[0][0] = 1
+
+        {1,1}, //1 int[0]=1 int[1]=1
+        {1,-1},//2 int[0]=1 int[1]=-1
+        {-1,1},//3 int[]
+        {-1,-1}//4 int[]
     };
+
 }

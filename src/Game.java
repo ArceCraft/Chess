@@ -7,7 +7,7 @@ public class Game {
     private List<Move> playedMoves = new ArrayList<>();
     private Player[] players = new Player[2];
     private PieceColor turn;
-    private Result result;
+    private Result result = Result.None;
     private CheckStatus checkStatus;
     private Board board;
     static Scanner sc = new Scanner(System.in);
@@ -18,11 +18,18 @@ public class Game {
 
         Create();
 
-        while (true){
+        while (result == Result.None) {
 
             board.PrintBoard();
             MoveRequest();
+
         }
+
+        board.PrintFinalBoard(result);
+
+        System.out.println("Juego terminado, resultado: " + result);
+
+
     }
 
 
@@ -48,9 +55,6 @@ public class Game {
 
     }
 
-    public void IsEnded() {
-
-    }
 
     public boolean IsChecked() {
 
@@ -79,7 +83,6 @@ public class Game {
                 Square[] movesOfThePiece = piece.Moves();
                 for(Square moves : movesOfThePiece){
                     if(Square.squareComparator(moves,reyPos)){
-                        System.out.println("Rey "+ rey.getPieceColor() +" en jaque");
                         enJaque = true;
                         break;
                     }
@@ -143,10 +146,6 @@ public class Game {
         Piece capturedPiece;
         Square moveSelected;
         List<Integer> movablePiecesList = new ArrayList<>();
-        Piece lastMovedPiece = null;
-
-        if(playedMoves.size()!=0)
-            lastMovedPiece = playedMoves.get(playedMoves.size()-1).getMovedPiece();
 
         int pieceIndex;
 
@@ -156,6 +155,8 @@ public class Game {
         pickedPieceSet = board.pieceSets[turn.ordinal()];
 
         System.out.println("Piezas disponibles para mover: ");
+
+
 
 
         if(!IsChecked()){
@@ -183,7 +184,14 @@ public class Game {
 
             }
 
+
+            if(movablePiecesList.size() == 0){
+                result = Result.Draw;
+            }
         }
+
+
+
         else{
 
             for (int i = 0; i < pickedPieceSet.pieces.size(); i++) {
@@ -209,38 +217,68 @@ public class Game {
 
             }
 
+            if(movablePiecesList.size() == 0){
+                if(turn == PieceColor.Blancas)
+                    result = Result.BlackWin;
+                else
+                    result = Result.WhiteWin;
+            }
+
+        }
+
+
+        if(!(IsChecked() && result!=Result.None)){
+            while (true){
+                System.out.println("De las anteriores piezas listadas, seleccione la que desea mover");
+                try {
+                    pieceIndex = new Scanner(System.in).nextInt()-1; //Cambiar por player input ==> players[turn.ordinal()].makeMove();
+                    break;
+                }
+                catch (Exception e){
+                    System.out.println("Valor introducido no valido. ");
+                }
+            }
+
+            pickedPiece = pickedPieceSet.pieces.get(pieceIndex);
+
+
+            System.out.println();
+            System.out.println("Pieza Seleccionada: " + pickedPiece.getPieceType() + "|" +Rank.values()[pickedPiece.getPlaceAt().getColumn()] + (8-pickedPiece.getPlaceAt().getRow()));
+
+            System.out.println("Movimientos disponibles: ");
+
+            if(IsChecked()){
+
+                if(pickedPiece.getPieceType() == PieceType.Rey){
+                    board.printBoardWithPossiblesMovements(pickedPiece.MovesWithOutCheckedMoves());
+                    System.out.println("Seleccione alguno: ");
+                    moveSelected = pickedPiece.MovesWithOutCheckedMoves()[sc.nextInt()-1];
+                }
+                else{
+                    board.printBoardWithPossiblesMovements(pickedPiece.MovesWhenInCheck());
+                    System.out.println("Seleccione alguno: ");
+                    moveSelected = pickedPiece.MovesWhenInCheck()[sc.nextInt()-1];
+                }
+
+
+            }
+            else{
+                board.printBoardWithPossiblesMovements(pickedPiece.MovesWithOutCheckedMoves());
+                System.out.println("Seleccione alguno: ");
+                moveSelected = pickedPiece.MovesWithOutCheckedMoves()[sc.nextInt()-1];
+            }
+
+
+
+
+            capturedPiece = getCapturedPieceIfCaptured(pickedPiece.getPieceColor(),moveSelected);
+            AddMove(pickedPiece.getPlaceAt(), moveSelected,pickedPiece,capturedPiece);
+
+            setTurn(turn);
         }
 
 
 
-
-        while (true){
-            System.out.println("De las anteriores piezas listadas, seleccione la que desea mover");
-            try {
-                pieceIndex = new Scanner(System.in).nextInt()-1;
-                break;
-            }
-            catch (Exception e){
-                System.out.println("Valor introducido no valido. ");
-            }
-        }
-
-        pickedPiece = pickedPieceSet.pieces.get(pieceIndex);
-
-
-        System.out.println();
-        System.out.println("Pieza Seleccionada: " + pickedPiece.getPieceType() + "|" +Rank.values()[pickedPiece.getPlaceAt().getColumn()] + (8-pickedPiece.getPlaceAt().getRow()));
-
-        System.out.println("Movimientos disponibles: ");
-
-        board.printBoardWithPossiblesMovements(pickedPiece.MovesWithOutCheckedMoves());
-
-        System.out.println("Seleccione alguno: ");
-        moveSelected = pickedPiece.Moves()[sc.nextInt()-1];
-        capturedPiece = getCapturedPieceIfCaptured(pickedPiece.getPieceColor(),moveSelected);
-        AddMove(pickedPiece.getPlaceAt(), moveSelected,pickedPiece,capturedPiece);
-
-        setTurn(turn);
 
 
 

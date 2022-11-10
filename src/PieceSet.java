@@ -170,7 +170,7 @@ public class PieceSet {
         if (color == PieceColor.Negras)
             pieceSymbol = piecesSymbols[PieceType.Reina.ordinal() + 6];
 
-        queen.setPlaceAt(new Square(row, 4));
+        queen.setPlaceAt(new Square(row, 3));
 
         queen.setPieceSymbol(pieceSymbol);
 
@@ -191,7 +191,7 @@ public class PieceSet {
         if (color == PieceColor.Negras)
             pieceSymbol = piecesSymbols[PieceType.Rey.ordinal() +6];
 
-        king.setPlaceAt(new Square(row,3));
+        king.setPlaceAt(new Square(row,4));
 
         king.setPieceSymbol(pieceSymbol);
 

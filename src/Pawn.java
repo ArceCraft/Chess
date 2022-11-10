@@ -31,59 +31,28 @@ public class Pawn extends Piece{
 
         int row = getPlaceAt().getRow();
         int column = getPlaceAt().getColumn();
+        byte direction = 1;
 
-        switch (moveDirection) {
-            case Up:
-
-
-                for (int i = 1; i < range+1; i++) {
-
-                    if(row - i < 0)
-                        break;
-                    if(FreeMoveValidation(new Square(row - i, column)) || CaptureMoveValidation(new Square(row - i, column)))
-                        break;
-                    else
-                        freeMoves.add(new Square(row - i, column));
-                }
+        if(moveDirection == MoveDirection.Up)
+            direction = - 1;
 
 
+        for (int i = 1; i < range+1; i++) {
+
+            if(row + direction*i < 0)
                 break;
-
-            case Down:
-
-                for (int i = 1; i < range+1; i++) {
-                    if(row + i >= 8)
-                        break;
-                    if(FreeMoveValidation(new Square(row + i, column)) || CaptureMoveValidation(new Square(row + i, column)))
-                        break;
-                    else
-                        freeMoves.add(new Square(row + i, column));
-                }
+            if(FreeMoveValidation(new Square(row + direction*i, column)) || CaptureMoveValidation(new Square(row + direction*i, column)))
                 break;
+            else
+                freeMoves.add(new Square(row + direction*i, column));
         }
 
-        switch (moveDirection) {
-            case Up:
-                for (int i = 0; i < upDirections.length; i++) {
-                    if((row + upDirections[i][0])<0 ||(row + upDirections[i][0]) >= 8 || (column +upDirections[i][1]) < 0 || (column +upDirections[i][1]) >=8)
-                        continue;
-                    else if (CaptureMoveValidation(new Square(row + upDirections[i][0], column +upDirections[i][1])))
-                        freeMoves.add(new Square(row + upDirections[i][0], column +upDirections[i][1]));
-                }
-
-                break;
-
-            case Down:
-                for (int i = 0; i < downDirections.length; i++) {
-                    if((row + downDirections[i][0])<0 ||(row + downDirections[i][0]) >= 8 || (column +downDirections[i][1]) < 0 || (column +downDirections[i][1]) >=8)
-                        continue;
-                    else if (CaptureMoveValidation(new Square(row + downDirections[i][0], column +downDirections[i][1])))
-                        freeMoves.add(new Square(row + downDirections[i][0], column +downDirections[i][1]));
-                }
-
-                break;
+        for (int i = 0; i < moveDirections.length; i++) {
+            if((row + moveDirections[i][0]*direction)<0 ||(row + moveDirections[i][0]*direction) >= 8 || (column +moveDirections[i][1]) < 0 || (column +moveDirections[i][1]) >=8)
+                continue;
+            else if (CaptureMoveValidation(new Square(row + moveDirections[i][0]*direction, column +moveDirections[i][1])))
+                freeMoves.add(new Square(row + moveDirections[i][0]*direction, column +moveDirections[i][1]));
         }
-
 
         Square[] freeMovesArray = new Square[freeMoves.size()];
 
@@ -98,35 +67,67 @@ public class Pawn extends Piece{
 
         movesOfThePieceWithPutCheckedMoves.addAll(movesOfThePiece);
 
-        for(Piece piece : board.pieceSets[(this.getPieceColor().ordinal()-1)*(-1)].pieces){
-            if(nonCheckMoveValidation(piece)){
-                Square[] movesOfTheContraryPiece = piece.Moves();
-                for(Square moveOfContraryPiece : movesOfTheContraryPiece){
-                    for(Square moveOfThePiece : movesOfThePiece){
-                        if(!Square.squareComparator(moveOfThePiece,moveOfContraryPiece))
-                            movesOfThePieceWithPutCheckedMoves.remove(moveOfThePiece);
-
+        //Para cada pieza del set contrario
+        for(Piece contraryPiece : board.pieceSets[(this.getPieceColor().ordinal()-1)*(-1)].pieces){
+            //Comprobar si la pieza esta está entre el rey y los movimientos de pieza contraria.
+            if(isBetween(contraryPiece)){
+                //Toma los movientos posibles de la pieza.
+                for(Square moveOfThePiece : movesOfThePiece){
+                    //Guarda los movimientos de la pieza contraria.
+                    Square[] movesOfTheContraryPiece = contraryPiece.PathToKing();
+                    boolean movementExistence = false;
+                    for(Square moveOfContraryPiece : movesOfTheContraryPiece){
+                        if((Square.squareComparator(moveOfThePiece,moveOfContraryPiece) || Square.squareComparator(moveOfThePiece,contraryPiece.getPlaceAt())))
+                            movementExistence = true;
                     }
+                    if(!movementExistence)
+                        movesOfThePieceWithPutCheckedMoves.remove(moveOfThePiece);
+
                 }
             }
-
-
         }
 
         Square[] movesOfThePieceArray = new Square[movesOfThePieceWithPutCheckedMoves.size()];
 
         return movesOfThePieceWithPutCheckedMoves.toArray(movesOfThePieceArray);
-
     }
 
 
     @Override
     public Square[] MovesWhenInCheck( ) {
 
+        ArrayList<Square> movesOfThePiece = new ArrayList<>(Arrays.asList(this.Moves()));
+        ArrayList<Square> movesOfThePieceWithPutCheckedMoves = new ArrayList<>();
+
+        movesOfThePieceWithPutCheckedMoves.addAll(movesOfThePiece);
+        Piece[] setOfCheckinPieces = CheckinPieces();
+
+        if(setOfCheckinPieces.length == 1){
+            //Para cada pieza del set contrario
+            for(Piece contraryPiece : setOfCheckinPieces){
+                //Toma los movimientos posibles de la pieza actual
+                for(Square moveOfThePiece : movesOfThePiece){
+                    //Guarda los movimientos que se dirigen al rey de la pieza contraria.
+                    Square[] movesOfTheContraryPiece = contraryPiece.PathToKing();
+                    boolean movementExistence = false;
+                    for(Square moveOfContraryPiece : movesOfTheContraryPiece){
+                        if((Square.squareComparator(moveOfThePiece,moveOfContraryPiece) || Square.squareComparator(moveOfThePiece,contraryPiece.getPlaceAt())))
+                            movementExistence = true;
+                    }
+
+                    if(!movementExistence)
+                        movesOfThePieceWithPutCheckedMoves.remove(moveOfThePiece);
+
+                }
+            }
+        }
+        else
+            movesOfThePieceWithPutCheckedMoves.clear();
 
 
+        Square[] movesOfThePieceArray = new Square[movesOfThePieceWithPutCheckedMoves.size()];
 
-        return new Square[0];
+        return movesOfThePieceWithPutCheckedMoves.toArray(movesOfThePieceArray);
     }
 
     @Override
@@ -134,14 +135,23 @@ public class Pawn extends Piece{
         return new Square[0];
     }
 
-    int[][] downDirections = {
-            {1,1 },
-            {1,-1}
-    };
+    @Override
+    public Square[] VulnerableArea() {
+        return new Square[0];
+    }
 
-    int[][] upDirections = {
-            {-1,1 },
-            {-1,-1}
+    @Override
+    public Square[] PathToKing() {
+        List<Square> movesToKing = new ArrayList<>();
+        movesToKing.add(this.getPlaceAt());
+
+        Square[] movesToKingArray = new Square[movesToKing.size()];
+        return movesToKing.toArray(movesToKingArray);
+    }
+
+    int[][] moveDirections = {
+            {1, 1},
+            {1,-1}
     };
 
 }

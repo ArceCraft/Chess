@@ -40,24 +40,30 @@ public class Knight extends Piece{
 
     @Override
     public Square[] MovesWithOutCheckedMoves() {
+
         ArrayList<Square> movesOfThePiece = new ArrayList<>(Arrays.asList(this.Moves()));
         ArrayList<Square> movesOfThePieceWithPutCheckedMoves = new ArrayList<>();
 
         movesOfThePieceWithPutCheckedMoves.addAll(movesOfThePiece);
 
-        for(Piece piece : board.pieceSets[(this.getPieceColor().ordinal()-1)*(-1)].pieces){
-            if(nonCheckMoveValidation(piece)){
+        //Para cada pieza del set contrario
+        for(Piece contraryPiece : board.pieceSets[(this.getPieceColor().ordinal()-1)*(-1)].pieces){
+            //Comprobar si la pieza esta está entre el rey y los movimientos de pieza contraria.
+            if(isBetween(contraryPiece)){
+                //Toma los movientos posibles de la pieza.
                 for(Square moveOfThePiece : movesOfThePiece){
-                    Square[] movesOfTheContraryPiece = piece.Moves();
+                    //Guarda los movimientos de la pieza contraria.
+                    Square[] movesOfTheContraryPiece = contraryPiece.PathToKing();
+                    boolean movementExistence = false;
                     for(Square moveOfContraryPiece : movesOfTheContraryPiece){
-                        if(Square.squareComparator(moveOfThePiece,moveOfContraryPiece))
-                            movesOfThePieceWithPutCheckedMoves.remove(moveOfThePiece);
-
+                        if((Square.squareComparator(moveOfThePiece,moveOfContraryPiece) || Square.squareComparator(moveOfThePiece,contraryPiece.getPlaceAt())))
+                            movementExistence = true;
                     }
+                    if(!movementExistence)
+                        movesOfThePieceWithPutCheckedMoves.remove(moveOfThePiece);
+
                 }
             }
-
-
         }
 
         Square[] movesOfThePieceArray = new Square[movesOfThePieceWithPutCheckedMoves.size()];
@@ -67,12 +73,60 @@ public class Knight extends Piece{
 
     @Override
     public Square[] MovesWhenInCheck( ) {
-        return new Square[0];
+
+        ArrayList<Square> movesOfThePiece = new ArrayList<>(Arrays.asList(this.Moves()));
+        ArrayList<Square> movesOfThePieceWithPutCheckedMoves = new ArrayList<>();
+
+        movesOfThePieceWithPutCheckedMoves.addAll(movesOfThePiece);
+        Piece[] setOfCheckinPieces = CheckinPieces();
+
+        if(setOfCheckinPieces.length == 1){
+            //Para cada pieza del set contrario
+            for(Piece contraryPiece : setOfCheckinPieces){
+                //Toma los movimientos posibles de la pieza actual
+                for(Square moveOfThePiece : movesOfThePiece){
+                    //Guarda los movimientos que se dirigen al rey de la pieza contraria.
+                    Square[] movesOfTheContraryPiece = contraryPiece.PathToKing();
+                    boolean movementExistence = false;
+                    for(Square moveOfContraryPiece : movesOfTheContraryPiece){
+                        if((Square.squareComparator(moveOfThePiece,moveOfContraryPiece) || Square.squareComparator(moveOfThePiece,contraryPiece.getPlaceAt())))
+                            movementExistence = true;
+                    }
+
+                    if(!movementExistence)
+                        movesOfThePieceWithPutCheckedMoves.remove(moveOfThePiece);
+
+                }
+            }
+        }
+        else
+            movesOfThePieceWithPutCheckedMoves.clear();
+
+
+
+        Square[] movesOfThePieceArray = new Square[movesOfThePieceWithPutCheckedMoves.size()];
+
+        return movesOfThePieceWithPutCheckedMoves.toArray(movesOfThePieceArray);
     }
 
     @Override
     public Square[] PathOfAttacks() {
         return new Square[0];
+    }
+
+    @Override
+    public Square[] VulnerableArea() {
+        return new Square[0];
+    }
+
+    @Override
+    public Square[] PathToKing() {
+        List<Square> movesToKing = new ArrayList<>();
+        movesToKing.add(this.getPlaceAt());
+
+        Square[] movesToKingArray = new Square[movesToKing.size()];
+
+        return movesToKing.toArray(movesToKingArray);
     }
 
 
