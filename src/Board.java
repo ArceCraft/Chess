@@ -63,12 +63,14 @@ public class Board {
             for (Square square : squares[i]) {
                 cellPainting = !cellPainting;
 
-                if(getPieceOnBoardSquare(square) != null) {
+                Piece piece = getPieceOnBoardSquare(square);
+
+                if(piece != null) {
 
                     if (cellPainting)
-                        System.out.print(ConsoleColors.WHITE_BACKGROUND_BRIGHT + getPieceOnBoardSquare(square).getPieceSymbol() + ConsoleColors.RESET);
+                        System.out.print(ConsoleColors.WHITE_BACKGROUND_BRIGHT + piece.getPieceSymbol() + ConsoleColors.RESET);
                     else
-                        System.out.print(ConsoleColors.BLACK_BACKGROUND + getPieceOnBoardSquare(square).getPieceSymbol() + ConsoleColors.RESET);
+                        System.out.print(ConsoleColors.BLACK_BACKGROUND +piece.getPieceSymbol() + ConsoleColors.RESET);
                 }
 
                 else{
@@ -119,24 +121,26 @@ public class Board {
             for (Square square : squares[i]) {
                 cellPainting = !cellPainting;
 
-                if(getPieceOnBoardSquare(square) != null && isSelectable(moves,square)){
+                Piece piece = getPieceOnBoardSquare(square);
+
+                if(piece != null && isSelectable(moves,square)){
 
                     if (cellPainting)
-                        System.out.print(ConsoleColors.WHITE_BACKGROUND_SELECT_ATTACK+ getPieceOnBoardSquare(square).getPieceSymbol() + ConsoleColors.RESET);
+                        System.out.print(ConsoleColors.WHITE_BACKGROUND_SELECT_ATTACK+ piece.getPieceSymbol() + ConsoleColors.RESET);
                     else
-                        System.out.print(ConsoleColors.BLACK_BACKGROUND_SELECT_ATTACK + getPieceOnBoardSquare(square).getPieceSymbol() + ConsoleColors.RESET);
+                        System.out.print(ConsoleColors.BLACK_BACKGROUND_SELECT_ATTACK + piece.getPieceSymbol() + ConsoleColors.RESET);
                     continue;
                 }
 
-                else if(getPieceOnBoardSquare(square) != null && !isSelectable(moves,square)) {
+                else if(piece != null && !isSelectable(moves,square)) {
 
                     if (cellPainting)
-                        System.out.print(ConsoleColors.WHITE_BACKGROUND_BRIGHT + getPieceOnBoardSquare(square).getPieceSymbol() + ConsoleColors.RESET);
+                        System.out.print(ConsoleColors.WHITE_BACKGROUND_BRIGHT + piece.getPieceSymbol() + ConsoleColors.RESET);
                     else
-                        System.out.print(ConsoleColors.BLACK_BACKGROUND + getPieceOnBoardSquare(square).getPieceSymbol() + ConsoleColors.RESET);
+                        System.out.print(ConsoleColors.BLACK_BACKGROUND + piece.getPieceSymbol() + ConsoleColors.RESET);
                 }
 
-                else if(isSelectable(moves,square) && getPieceOnBoardSquare(square) == null ){
+                else if(isSelectable(moves,square) && piece == null ){
                     if (cellPainting)
                         System.out.print(boardSymbol[2]);
                     else
@@ -186,12 +190,14 @@ public class Board {
             for (Square square : squares[i]) {
                 cellPainting = !cellPainting;
 
-                if(getPieceOnBoardSquare(square) != null) {
+                Piece piece = getPieceOnBoardSquare(square);
+
+                if(piece != null) {
 
                     if (cellPainting)
-                        System.out.print(ConsoleColors.WHITE_BACKGROUND_BRIGHT + getPieceOnBoardSquare(square).getPieceSymbol() + ConsoleColors.RESET);
+                        System.out.print(ConsoleColors.WHITE_BACKGROUND_BRIGHT + piece.getPieceSymbol() + ConsoleColors.RESET);
                     else
-                        System.out.print(ConsoleColors.BLACK_BACKGROUND + getPieceOnBoardSquare(square).getPieceSymbol() + ConsoleColors.RESET);
+                        System.out.print(ConsoleColors.BLACK_BACKGROUND + piece.getPieceSymbol() + ConsoleColors.RESET);
                 }
 
                 else{

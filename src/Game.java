@@ -142,11 +142,11 @@ public class Game {
         Square moveSelected;
         List<Integer> movablePiecesList = new ArrayList<>();
 
-        int pieceIndex;
-
 
         pickedPieceSet = board.pieceSets[turn.ordinal()];
 
+        if(IsChecked())
+            System.out.println("Jugador "+ turn +" estás en jaque.");
 
         for (int i = 0; i < pickedPieceSet.pieces.size(); i++) {
             if(IsChecked()){
@@ -170,8 +170,6 @@ public class Game {
         }
 
 
-
-
         if(movablePiecesList.size() == 0 && IsChecked()){
             System.out.println("JAQUE MATE.");
             if(turn == PieceColor.White)
@@ -186,48 +184,27 @@ public class Game {
         if(result != Result.None)
             return;
 
-
-
+        Square[] movesOfThePiece;
 
         System.out.println("De las anteriores piezas listadas, seleccione la que desea mover");
-        while (true){
-            while (true){
-                try {
-                    pieceIndex = new Scanner(System.in).nextInt()-1; //Cambiar por player input ==> players[turn.ordinal()].makeMove();
-                    break;
-                } catch (Exception e){
-                    System.out.println("Valor introducido no valido. ");
-                }
-            }
-
-            if(movablePiecesList.contains(pieceIndex)){
-                pickedPiece = pickedPieceSet.pieces.get(pieceIndex);
-                break;
-            }
-            else{
-                System.out.println("No se seleccionó una opción válida, por favor vuelva a seleccionar la pieza que desea mover: ");
-            }
-
-        }
 
 
-
+        pickedPiece = players[turn.ordinal()].selectPiece(pickedPieceSet, movablePiecesList);
         System.out.println();
-        System.out.println("Pieza Seleccionada: " + pickedPiece.getPieceType() + "[" +Rank.values()[pickedPiece.getPlaceAt().getColumn()] + (8-pickedPiece.getPlaceAt().getRow())+"]");
+        System.out.println("Pieza Seleccionada: " + pickedPiece.getPieceType() + "[" + Rank.values()[pickedPiece.getPlaceAt().getColumn()] + (8 - pickedPiece.getPlaceAt().getRow()) + "]");
         System.out.println("Movimientos disponibles: ");
 
+        if (IsChecked())
+            movesOfThePiece = pickedPiece.MovesWhenInCheck();
+        else
+            movesOfThePiece = pickedPiece.MovesAvoidingCheck();
 
-        if(IsChecked()){
-            board.printBoardWithPossiblesMovements(pickedPiece.MovesWhenInCheck());
-            System.out.println("Seleccione alguno: ");
-            moveSelected = pickedPiece.MovesWhenInCheck()[sc.nextInt()-1];
-        }
-        else{
-            board.printBoardWithPossiblesMovements(pickedPiece.MovesAvoidingCheck());
-            System.out.println("Seleccione alguno: ");
-            moveSelected = pickedPiece.MovesAvoidingCheck()[sc.nextInt()-1];
-        }
+        board.printBoardWithPossiblesMovements(movesOfThePiece);
 
+
+        System.out.println("Seleccione alguno: ");
+
+        moveSelected = players[turn.ordinal()].selectMove(movesOfThePiece);
         capturedPiece = getCapturedPieceIfCaptured(pickedPiece.getPieceColor(),moveSelected);
         AddMove(pickedPiece.getPlaceAt(), moveSelected,pickedPiece,capturedPiece);
         setTurn(turn);
