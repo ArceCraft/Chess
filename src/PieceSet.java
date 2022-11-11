@@ -53,7 +53,7 @@ public class PieceSet {
                 pieceType[i].setPlaceAt(new Square(1,i));
             else
                 pieceType[i].setPlaceAt(new Square(6,i));
-            if(color == PieceColor.Negras)
+            if(color == PieceColor.Black)
                 pieceSymbol = piecesSymbols[PieceType.Peon.ordinal()+6];
 
             pieceType[i].setPieceSymbol(pieceSymbol);
@@ -80,7 +80,7 @@ public class PieceSet {
         if(pieceOnTop != color)
             row = 7;
 
-        if(color == PieceColor.Negras)
+        if(color == PieceColor.Black)
             pieceSymbol = piecesSymbols[PieceType.Torre.ordinal()+6];
 
 
@@ -115,7 +115,7 @@ public class PieceSet {
 
         if(pieceOnTop != color)
             row = 7;
-        if(color == PieceColor.Negras)
+        if(color == PieceColor.Black)
             pieceSymbol = piecesSymbols[PieceType.Caballo.ordinal()+6];
 
         pieceType[0].setPlaceAt(new Square(row,1));
@@ -143,7 +143,7 @@ public class PieceSet {
 
         if(pieceOnTop != color)
             row = 7;
-        if(color == PieceColor.Negras)
+        if(color == PieceColor.Black)
             pieceSymbol = piecesSymbols[PieceType.Alfil.ordinal()+6];
 
         pieceType[0].setPlaceAt(new Square(row,2));
@@ -167,7 +167,7 @@ public class PieceSet {
 
         if (pieceOnTop != color)
             row = 7;
-        if (color == PieceColor.Negras)
+        if (color == PieceColor.Black)
             pieceSymbol = piecesSymbols[PieceType.Reina.ordinal() + 6];
 
         queen.setPlaceAt(new Square(row, 3));
@@ -188,7 +188,7 @@ public class PieceSet {
 
         if(pieceOnTop != color)
             row = 7;
-        if (color == PieceColor.Negras)
+        if (color == PieceColor.Black)
             pieceSymbol = piecesSymbols[PieceType.Rey.ordinal() +6];
 
         king.setPlaceAt(new Square(row,4));

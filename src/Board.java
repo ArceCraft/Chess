@@ -2,7 +2,7 @@ public class Board {
 
     private Square[][] squares = new Square[8][8];
     PieceSet[] pieceSets = new PieceSet[2];
-    private final PieceColor pieceSetOnTop = PieceColor.Negras;
+    private final PieceColor pieceSetOnTop = PieceColor.Black;
 
     Board(){
 
@@ -13,8 +13,8 @@ public class Board {
     public void Create(){
 
         SquaresFiller();
-        pieceSets[0] = new PieceSet(this, PieceColor.Negras, pieceSetOnTop);
-        pieceSets[1] = new PieceSet(this, PieceColor.Blancas, pieceSetOnTop);
+        pieceSets[0] = new PieceSet(this, PieceColor.Black, pieceSetOnTop);
+        pieceSets[1] = new PieceSet(this, PieceColor.White, pieceSetOnTop);
 
     }
 

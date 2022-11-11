@@ -39,12 +39,10 @@ public class Knight extends Piece{
     }
 
     @Override
-    public Square[] MovesWithOutCheckedMoves() {
+    public Square[] MovesAvoidingCheck() {
 
         ArrayList<Square> movesOfThePiece = new ArrayList<>(Arrays.asList(this.Moves()));
-        ArrayList<Square> movesOfThePieceWithPutCheckedMoves = new ArrayList<>();
-
-        movesOfThePieceWithPutCheckedMoves.addAll(movesOfThePiece);
+        ArrayList<Square> movesOfThePieceWithPutCheckedMoves = new ArrayList<>(movesOfThePiece);
 
         //Para cada pieza del set contrario
         for(Piece contraryPiece : board.pieceSets[(this.getPieceColor().ordinal()-1)*(-1)].pieces){
@@ -75,9 +73,7 @@ public class Knight extends Piece{
     public Square[] MovesWhenInCheck( ) {
 
         ArrayList<Square> movesOfThePiece = new ArrayList<>(Arrays.asList(this.Moves()));
-        ArrayList<Square> movesOfThePieceWithPutCheckedMoves = new ArrayList<>();
-
-        movesOfThePieceWithPutCheckedMoves.addAll(movesOfThePiece);
+        ArrayList<Square> movesOfThePieceWithPutCheckedMoves = new ArrayList<>(movesOfThePiece);
         Piece[] setOfCheckinPieces = CheckinPieces();
 
         if(setOfCheckinPieces.length == 1){
@@ -92,7 +88,6 @@ public class Knight extends Piece{
                         if((Square.squareComparator(moveOfThePiece,moveOfContraryPiece) || Square.squareComparator(moveOfThePiece,contraryPiece.getPlaceAt())))
                             movementExistence = true;
                     }
-
                     if(!movementExistence)
                         movesOfThePieceWithPutCheckedMoves.remove(moveOfThePiece);
 
@@ -111,11 +106,6 @@ public class Knight extends Piece{
 
     @Override
     public Square[] PathOfAttacks() {
-        return new Square[0];
-    }
-
-    @Override
-    public Square[] VulnerableArea() {
         return new Square[0];
     }
 

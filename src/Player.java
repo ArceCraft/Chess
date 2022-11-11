@@ -1,12 +1,10 @@
 public class Player {
 
     private PieceColor pieceColor;
-    private PlayerEngine engine;
 
-    Player(PieceColor pieceColor, PlayerEngine playerEngine){
+    Player(PieceColor pieceColor){
 
         this.pieceColor = pieceColor;
-        this.engine = playerEngine;
 
     }
 

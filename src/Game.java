@@ -8,27 +8,26 @@ public class Game {
     private Player[] players = new Player[2];
     private PieceColor turn;
     private Result result = Result.None;
-    private CheckStatus checkStatus;
     private Board board;
     static Scanner sc = new Scanner(System.in);
 
     Game() {
 
-        turn = PieceColor.Blancas;
-
+        turn = PieceColor.White;
         Create();
+        board.PrintBoard();
 
-        while (result == Result.None) {
+        while (true) {
 
+            MoveProcess();
+            if(result != Result.None)
+                break;
             board.PrintBoard();
-            MoveRequest();
 
         }
 
         board.PrintFinalBoard(result);
-
         System.out.println("Juego terminado, resultado: " + result);
-
 
     }
 
@@ -50,8 +49,8 @@ public class Game {
     public void Create() {
 
         board = new Board();
-        players[0] = new Player(PieceColor.Negras, new PlayerEngine());
-        players[1] = new Player(PieceColor.Blancas, new PlayerEngine());
+        players[0] = new Player(PieceColor.Black);
+        players[1] = new Player(PieceColor.White);
 
     }
 
@@ -61,12 +60,12 @@ public class Game {
         Boolean enJaque = false;
 
         //Crea el turno de las piezas contrarias
-        PieceColor turnoContrario = PieceColor.Blancas;
+        PieceColor turnoContrario = PieceColor.White;
 
-        if(turn == PieceColor.Blancas)
-            turnoContrario = PieceColor.Negras;
+        if(turn == PieceColor.White)
+            turnoContrario = PieceColor.Black;
 
-        //Toma la pieza "Rey" de las piezas del turno actual
+        //Toma la pieza "Rey" de las piezas del turno actual. Por defecto el rey se encuentra en la última posición de la lista, cambiarlo a la posición 0 sería mejor.
         Piece rey = board.pieceSets[turn.ordinal()].pieces.get(board.pieceSets[turn.ordinal()].pieces.size()-1);
         //Toma el set completo de piezas contrarias
         PieceSet pieceSetContrarias = board.pieceSets[turnoContrario.ordinal()];
@@ -115,31 +114,27 @@ public class Game {
 
 
 
-    Piece getCapturedPieceIfCaptured(PieceColor pickedPieceColor, Square square){
+    Piece getCapturedPieceIfCaptured(PieceColor pickedPieceColor, Square movement){
 
-        PieceColor capturedPieceColor = PieceColor.Blancas;
+        PieceColor capturedPieceColor = PieceColor.White;
         Piece capturedPiece = null;
 
-        if(pickedPieceColor == PieceColor.Blancas)
-            capturedPieceColor = PieceColor.Negras;
+        if(pickedPieceColor == PieceColor.White)
+            capturedPieceColor = PieceColor.Black;
 
 
-        int pieceIndex = board.pieceSets[capturedPieceColor.ordinal()].getPieceIndexBySquareCoordinates(square);
+        int pieceIndex = board.pieceSets[capturedPieceColor.ordinal()].getPieceIndexBySquareCoordinates(movement);
 
         if(pieceIndex !=  board.pieceSets[capturedPieceColor.ordinal()].pieces.size()){
             capturedPiece = board.pieceSets[capturedPieceColor.ordinal()].pieces.get(pieceIndex);
             System.out.println("Pieza capturada: " + capturedPiece.getPieceType());
         }
-        else
-            System.out.println("Ninguna pieza capturada");
-
-
 
         return capturedPiece;
 
     }
 
-    void MoveRequest(){
+    void MoveProcess(){
 
         PieceSet pickedPieceSet;
         Piece pickedPiece;
@@ -150,136 +145,92 @@ public class Game {
         int pieceIndex;
 
 
-        System.out.println("Turno de las " + turn);
-
         pickedPieceSet = board.pieceSets[turn.ordinal()];
 
-        System.out.println("Piezas disponibles para mover: ");
 
-
-
-
-        if(!IsChecked()){
-
-            //Bloque que se ejecuta cuando no se está en check
-
-            for (int i = 0; i < pickedPieceSet.pieces.size(); i++) {
-                if(pickedPieceSet.pieces.get(i).getPieceType() != PieceType.Rey){
-                    //Solo para las piezas que no sean el rey
-                    if(pickedPieceSet.pieces.get(i).MovesWithOutCheckedMoves().length != 0){
-                        movablePiecesList.add(i);
-                        System.out.print((i+1)+".- "+pickedPieceSet.pieces.get(i).getPieceType() + " |");
-                        System.out.println(" " + Rank.values()[pickedPieceSet.pieces.get(i).getPlaceAt().getColumn()] + (8-pickedPieceSet.pieces.get(i).getPlaceAt().getRow()));
-                    }
-                }
-                else{
-                    //Solo para el rey
-                    if(pickedPieceSet.pieces.get(i).MovesWithOutCheckedMoves().length != 0){
-                        movablePiecesList.add(i);
-                        System.out.print((i+1)+".- "+pickedPieceSet.pieces.get(i).getPieceType() + " |");
-                        System.out.println(" " + Rank.values()[pickedPieceSet.pieces.get(i).getPlaceAt().getColumn()] + (8-pickedPieceSet.pieces.get(i).getPlaceAt().getRow()));
-                    }
-
-                }
-
+        for (int i = 0; i < pickedPieceSet.pieces.size(); i++) {
+            if(IsChecked()){
+                if(pickedPieceSet.pieces.get(i).MovesWhenInCheck().length != 0)
+                    movablePiecesList.add(i);
             }
+            else{
+                if(pickedPieceSet.pieces.get(i).MovesAvoidingCheck().length != 0)
+                    movablePiecesList.add(i);
+            }
+        }
 
-
-            if(movablePiecesList.size() == 0){
-                result = Result.Draw;
+        //Se imprimen las piezas válidas para mover
+        if(movablePiecesList.size() != 0){
+            System.out.println("Turno: " + turn);
+            System.out.println("Piezas disponibles para mover: ");
+            for (Integer integer : movablePiecesList) {
+                System.out.print((integer + 1) + ".- " + pickedPieceSet.pieces.get(integer).getPieceType());
+                System.out.println("[" + Rank.values()[pickedPieceSet.pieces.get(integer).getPlaceAt().getColumn()] + (8 - pickedPieceSet.pieces.get(integer).getPlaceAt().getRow()) + "]");
             }
         }
 
 
 
-        else{
 
-            for (int i = 0; i < pickedPieceSet.pieces.size(); i++) {
-
-                if(pickedPieceSet.pieces.get(i).getPieceType() != PieceType.Rey){
-                    //Solo para las piezas que no sean el rey
-                    if(pickedPieceSet.pieces.get(i).MovesWhenInCheck().length != 0){
-                        movablePiecesList.add(i);
-                        System.out.print((i+1)+".- "+pickedPieceSet.pieces.get(i).getPieceType() + " |");
-                        System.out.println(" " + Rank.values()[pickedPieceSet.pieces.get(i).getPlaceAt().getColumn()] + (8-pickedPieceSet.pieces.get(i).getPlaceAt().getRow()));
-                    }
-                }
-
-                else{
-                    //Solo para el rey
-                    if(pickedPieceSet.pieces.get(i).MovesWithOutCheckedMoves().length != 0){
-                        movablePiecesList.add(i);
-                        System.out.print((i+1)+".- "+pickedPieceSet.pieces.get(i).getPieceType() + " |");
-                        System.out.println(" " + Rank.values()[pickedPieceSet.pieces.get(i).getPlaceAt().getColumn()] + (8-pickedPieceSet.pieces.get(i).getPlaceAt().getRow()));
-                    }
-
-                }
-
-            }
-
-            if(movablePiecesList.size() == 0){
-                if(turn == PieceColor.Blancas)
-                    result = Result.BlackWin;
-                else
-                    result = Result.WhiteWin;
-            }
-
+        if(movablePiecesList.size() == 0 && IsChecked()){
+            System.out.println("JAQUE MATE.");
+            if(turn == PieceColor.White)
+                result = Result.BlackWin;
+            else
+                result = Result.WhiteWin;
         }
+        else if(movablePiecesList.size() == 0 && !IsChecked()){
+            System.out.println("EMPATE.");
+            result = Result.Draw;
+        }
+        if(result != Result.None)
+            return;
 
 
-        if(!(IsChecked() && result!=Result.None)){
+
+
+        System.out.println("De las anteriores piezas listadas, seleccione la que desea mover");
+        while (true){
             while (true){
-                System.out.println("De las anteriores piezas listadas, seleccione la que desea mover");
                 try {
                     pieceIndex = new Scanner(System.in).nextInt()-1; //Cambiar por player input ==> players[turn.ordinal()].makeMove();
                     break;
-                }
-                catch (Exception e){
+                } catch (Exception e){
                     System.out.println("Valor introducido no valido. ");
                 }
             }
 
-            pickedPiece = pickedPieceSet.pieces.get(pieceIndex);
-
-
-            System.out.println();
-            System.out.println("Pieza Seleccionada: " + pickedPiece.getPieceType() + "|" +Rank.values()[pickedPiece.getPlaceAt().getColumn()] + (8-pickedPiece.getPlaceAt().getRow()));
-
-            System.out.println("Movimientos disponibles: ");
-
-            if(IsChecked()){
-
-                if(pickedPiece.getPieceType() == PieceType.Rey){
-                    board.printBoardWithPossiblesMovements(pickedPiece.MovesWithOutCheckedMoves());
-                    System.out.println("Seleccione alguno: ");
-                    moveSelected = pickedPiece.MovesWithOutCheckedMoves()[sc.nextInt()-1];
-                }
-                else{
-                    board.printBoardWithPossiblesMovements(pickedPiece.MovesWhenInCheck());
-                    System.out.println("Seleccione alguno: ");
-                    moveSelected = pickedPiece.MovesWhenInCheck()[sc.nextInt()-1];
-                }
-
-
+            if(movablePiecesList.contains(pieceIndex)){
+                pickedPiece = pickedPieceSet.pieces.get(pieceIndex);
+                break;
             }
             else{
-                board.printBoardWithPossiblesMovements(pickedPiece.MovesWithOutCheckedMoves());
-                System.out.println("Seleccione alguno: ");
-                moveSelected = pickedPiece.MovesWithOutCheckedMoves()[sc.nextInt()-1];
+                System.out.println("No se seleccionó una opción válida, por favor vuelva a seleccionar la pieza que desea mover: ");
             }
 
-
-
-
-            capturedPiece = getCapturedPieceIfCaptured(pickedPiece.getPieceColor(),moveSelected);
-            AddMove(pickedPiece.getPlaceAt(), moveSelected,pickedPiece,capturedPiece);
-
-            setTurn(turn);
         }
 
 
 
+        System.out.println();
+        System.out.println("Pieza Seleccionada: " + pickedPiece.getPieceType() + "[" +Rank.values()[pickedPiece.getPlaceAt().getColumn()] + (8-pickedPiece.getPlaceAt().getRow())+"]");
+        System.out.println("Movimientos disponibles: ");
 
+
+        if(IsChecked()){
+            board.printBoardWithPossiblesMovements(pickedPiece.MovesWhenInCheck());
+            System.out.println("Seleccione alguno: ");
+            moveSelected = pickedPiece.MovesWhenInCheck()[sc.nextInt()-1];
+        }
+        else{
+            board.printBoardWithPossiblesMovements(pickedPiece.MovesAvoidingCheck());
+            System.out.println("Seleccione alguno: ");
+            moveSelected = pickedPiece.MovesAvoidingCheck()[sc.nextInt()-1];
+        }
+
+        capturedPiece = getCapturedPieceIfCaptured(pickedPiece.getPieceColor(),moveSelected);
+        AddMove(pickedPiece.getPlaceAt(), moveSelected,pickedPiece,capturedPiece);
+        setTurn(turn);
 
 
     }
@@ -288,10 +239,10 @@ public class Game {
 
         PieceColor turn = actualTurn;
 
-        if (actualTurn == PieceColor.Negras)
-            turn = PieceColor.Blancas;
-        if (actualTurn == PieceColor.Blancas)
-            turn = PieceColor.Negras;
+        if (actualTurn == PieceColor.Black)
+            turn = PieceColor.White;
+        if (actualTurn == PieceColor.White)
+            turn = PieceColor.Black;
 
         this.turn = turn;
     }

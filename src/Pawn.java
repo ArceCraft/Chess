@@ -11,7 +11,7 @@ public class Pawn extends Piece{
         super(board, pieceColor);
         setPieceType(PieceType.Peon);
 
-        if(pieceColor == PieceColor.Blancas)
+        if(pieceColor == PieceColor.White)
             moveDirection = MoveDirection.Up;
         else
             moveDirection = MoveDirection.Down;
@@ -60,7 +60,7 @@ public class Pawn extends Piece{
     }
 
     @Override
-    public Square[] MovesWithOutCheckedMoves() {
+    public Square[] MovesAvoidingCheck() {
 
         ArrayList<Square> movesOfThePiece = new ArrayList<>(Arrays.asList(this.Moves()));
         ArrayList<Square> movesOfThePieceWithPutCheckedMoves = new ArrayList<>();
@@ -132,11 +132,6 @@ public class Pawn extends Piece{
 
     @Override
     public Square[] PathOfAttacks() {
-        return new Square[0];
-    }
-
-    @Override
-    public Square[] VulnerableArea() {
         return new Square[0];
     }
 

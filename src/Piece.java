@@ -24,13 +24,13 @@ public abstract  class Piece {
     public abstract Square[] Moves();
 
     //Movimientos que la pieza pueda hacer sin entrar en Jaque
-    public abstract Square[] MovesWithOutCheckedMoves(); //Moves to avoid Check
+    public abstract Square[] MovesAvoidingCheck(); //Moves to avoid Check
 
     //Movimientos que la pieza puede realizar para sacar de jaque al Rey.
     public abstract Square[] MovesWhenInCheck();
 
     public abstract Square[] PathOfAttacks();
-    public abstract Square[] VulnerableArea();
+
     public  abstract Square[] PathToKing();
 
 
@@ -49,11 +49,11 @@ public abstract  class Piece {
 
         ArrayList<Piece> checkinPieces = new ArrayList<>();
 
-        PieceColor turnoContrario = PieceColor.Blancas;
+        PieceColor turnoContrario = PieceColor.White;
 
 
-        if(this.pieceColor == PieceColor.Blancas)
-            turnoContrario = PieceColor.Negras;
+        if(this.pieceColor == PieceColor.White)
+            turnoContrario = PieceColor.Black;
 
         PieceSet pieceSetContrarias = board.pieceSets[turnoContrario.ordinal()];
 
