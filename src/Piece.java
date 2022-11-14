@@ -22,6 +22,7 @@ public abstract  class Piece {
     }
 
     public abstract Square[] Moves();
+    public abstract Square[] ProtectingMoves();
 
     //Movimientos que la pieza pueda hacer sin entrar en Jaque
     public abstract Square[] MovesAvoidingCheck(); //Moves to avoid Check

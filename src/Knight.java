@@ -39,6 +39,11 @@ public class Knight extends Piece{
     }
 
     @Override
+    public Square[] ProtectingMoves() {
+        return new Square[0];
+    }
+
+    @Override
     public Square[] MovesAvoidingCheck() {
 
         ArrayList<Square> movesOfThePiece = new ArrayList<>(Arrays.asList(this.Moves()));

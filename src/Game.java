@@ -1,6 +1,5 @@
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 public class Game {
 
@@ -9,7 +8,6 @@ public class Game {
     private PieceColor turn;
     private Result result = Result.None;
     private Board board;
-    static Scanner sc = new Scanner(System.in);
 
     Game() {
 

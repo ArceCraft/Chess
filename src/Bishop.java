@@ -44,6 +44,36 @@ public class Bishop extends Piece{
     }
 
     @Override
+    public Square[] ProtectingMoves() {
+
+        List<Square> freeMoves = new ArrayList<>();
+        int pivotRow = getPlaceAt().getRow();
+        int pivotColum = getPlaceAt().getColumn();
+
+        for (int[] moveDirection : moveDirections) {
+
+            for (int i = 1; i < 8; i++) {
+                if(pivotRow + moveDirection[0]*i < 0 || pivotRow + moveDirection[0]*i >= 8 || pivotColum + moveDirection[1]*i < 0 || pivotColum + moveDirection[1]*i >= 8)
+                    break;
+                else if(CaptureMoveValidation(new Square(pivotRow + moveDirection[0]*i, pivotColum + moveDirection[1]*i)))
+                    break;
+                else if(FreeMoveValidation(new Square(pivotRow + moveDirection[0]*i, pivotColum + moveDirection[1]*i))){
+                    freeMoves.add(new Square(pivotRow + moveDirection[0]*i, pivotColum + moveDirection[1]*i));
+                    break;
+                }
+                else
+                    freeMoves.add(new Square(pivotRow + moveDirection[0]*i, pivotColum + moveDirection[1]*i));
+            }
+
+        }
+
+
+        Square[] freeMovesArray = new Square[freeMoves.size()];
+
+        return freeMoves.toArray(freeMovesArray);
+    }
+
+    @Override
     public Square[] MovesAvoidingCheck() {
 
         ArrayList<Square> movesOfThePiece = new ArrayList<>(Arrays.asList(this.Moves()));
@@ -106,8 +136,6 @@ public class Bishop extends Piece{
         }
         else
             movesOfThePieceWithPutCheckedMoves.clear();
-
-
 
         Square[] movesOfThePieceArray = new Square[movesOfThePieceWithPutCheckedMoves.size()];
 
