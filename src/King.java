@@ -57,7 +57,7 @@ public class King extends Piece{
 
         for (int[] moveDirection : moveDirections) {
 
-            for (int i = 1; i < 8; i++) {
+            for (int i = 1; i < 2; i++) {
                 if(pivotRow + moveDirection[0]*i < 0 || pivotRow + moveDirection[0]*i >= 8 || pivotColum + moveDirection[1]*i < 0 || pivotColum + moveDirection[1]*i >= 8)
                     break;
                 else if(CaptureMoveValidation(new Square(pivotRow + moveDirection[0]*i, pivotColum + moveDirection[1]*i)))
