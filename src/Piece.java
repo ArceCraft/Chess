@@ -46,6 +46,17 @@ public abstract  class Piece {
 
     }
 
+    public Boolean CaptureMoveValidation(Square square){
+
+        boolean exist = false;
+
+        if(board.getPieceOnBoardSquare(square) != null && board.getPieceOnBoardSquare(square).getPieceColor() != pieceColor )
+            exist=true;
+
+        return exist;
+
+    }
+
     public Piece[] CheckinPieces(){
 
         ArrayList<Piece> checkinPieces = new ArrayList<>();
@@ -73,16 +84,6 @@ public abstract  class Piece {
 
     }
 
-    public Boolean CaptureMoveValidation(Square square){
-
-        boolean exist = false;
-
-        if(board.getPieceOnBoardSquare(square) != null && board.getPieceOnBoardSquare(square).getPieceColor() != pieceColor )
-            exist=true;
-
-        return exist;
-
-    }
 
     public Boolean KingValidation(Square square){
 

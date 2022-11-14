@@ -90,7 +90,7 @@ public class Pawn extends Piece{
         for (int i = 0; i < moveDirections.length; i++) {
             if((row + moveDirections[i][0]*direction)<0 ||(row + moveDirections[i][0]*direction) >= 8 || (column +moveDirections[i][1]) < 0 || (column +moveDirections[i][1]) >=8)
                 continue;
-            else if (FreeMoveValidation(new Square(row + moveDirections[i][0]*direction, column +moveDirections[i][1])))
+            else
                 freeMoves.add(new Square(row + moveDirections[i][0]*direction, column +moveDirections[i][1]));
         }
 
