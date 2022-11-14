@@ -108,11 +108,12 @@ public abstract  class Piece {
 
 
         //Tomamos los movimientos de la pieza contraria
-        for(Square moves : piece.Moves()){
-            if(Square.squareComparator(this.getPlaceAt(),moves))
-                comprobation1 = true;
+        if(piece.getPieceType() != PieceType.Rey){
+            for(Square moves : piece.Moves()){
+                if(Square.squareComparator(this.getPlaceAt(),moves))
+                    comprobation1 = true;
+            }
         }
-
         //Tomamos el area de vulnerabilidad del rey
         for(Square moves : rey.PathOfAttacks()){
             if(Square.squareComparator(this.getPlaceAt(),moves))

@@ -43,7 +43,6 @@ public class King extends Piece{
 
         }
 
-
         Square[] freeMovesArray = new Square[freeMoves.size()];
 
         return freeMoves.toArray(freeMovesArray);
