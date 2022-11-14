@@ -63,29 +63,12 @@ public class Pawn extends Piece{
     public Square[] ProtectingMoves() {
         List<Square> freeMoves = new ArrayList<>();
 
-        byte range=1;
-        if(!this.getMoved())
-            range = 2;
-
         int row = getPlaceAt().getRow();
         int column = getPlaceAt().getColumn();
         byte direction = 1;
 
         if(moveDirection == MoveDirection.Up)
             direction = - 1;
-
-
-        for (int i = 1; i < range+1; i++) {
-
-            if(row + direction*i < 0)
-                break;
-            if(FreeMoveValidation(new Square(row + direction*i, column)) || CaptureMoveValidation(new Square(row + direction*i, column)))
-                break;
-            if(CaptureMoveValidation(new Square(row + direction*i, column)) || CaptureMoveValidation(new Square(row + direction*i, column)))
-                break;
-            else
-                freeMoves.add(new Square(row + direction*i, column));
-        }
 
         for (int i = 0; i < moveDirections.length; i++) {
             if((row + moveDirections[i][0]*direction)<0 ||(row + moveDirections[i][0]*direction) >= 8 || (column +moveDirections[i][1]) < 0 || (column +moveDirections[i][1]) >=8)
