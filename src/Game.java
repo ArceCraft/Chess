@@ -13,6 +13,11 @@ public class Game {
 
         turn = PieceColor.White;
         Create();
+
+
+    }
+
+    public void gameProcess(){
         board.PrintBoard();
 
         while (true) {
@@ -26,7 +31,6 @@ public class Game {
 
         board.PrintFinalBoard(result);
         System.out.println("Juego terminado, resultado: " + result);
-
     }
 
 
