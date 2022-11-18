@@ -55,7 +55,7 @@ public class Rook extends Piece{
                     break;
                 else if (KingValidation(new Square(pivotRow + moveDirection[0]*i, pivotColum + moveDirection[1]*i))) {
                     freeMoves.add(new Square(pivotRow + moveDirection[0]*i, pivotColum + moveDirection[1]*i));
-                    freeMoves.add(new Square(pivotRow + moveDirection[0]*i+moveDirection[0], pivotColum + moveDirection[1]*i+moveDirection[1]*i));
+                    freeMoves.add(new Square(pivotRow + moveDirection[0]*i+moveDirection[0], pivotColum + moveDirection[1]*i+moveDirection[1]));
                     break;
                 }
                 else if(CaptureMoveValidation(new Square(pivotRow + moveDirection[0]*i, pivotColum + moveDirection[1]*i)) && !KingValidation(new Square(pivotRow + moveDirection[0]*i, pivotColum + moveDirection[1]*i)))
